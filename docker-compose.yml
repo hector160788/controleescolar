@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: bdcontrolescolar
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: controlescolar
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: controlescolar
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U controlescolar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

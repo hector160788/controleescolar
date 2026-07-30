@@ -1,0 +1,7 @@
+# Workspace/editor metadata
+.metadata/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
