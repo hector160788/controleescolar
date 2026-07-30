@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Inicio')}"></head>
+<body>
+<div class="home-wrapper">
+    <div th:replace="~{fragments/ui :: appTopbar('Panel de Control Escolar')}"></div>
+
+    <section class="home-content-layout">
+        <div th:replace="~{fragments/menu :: leftMenu}"></div>
+
+        <article class="home-panel">
+            <h2 class="h4 mb-2">Inicio</h2>
+            <p class="mb-3">Acceso concedido correctamente. Desde aqui puedes continuar con los modulos del sistema.</p>
+           <!-- <a th:href="@{/formulario-demo}" class="btn btn-outline-primary">Ver ejemplo de formulario reutilizable</a> -->
+        </article> 
+    </section>
+</div>
+
+<th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+</body>
+</html>

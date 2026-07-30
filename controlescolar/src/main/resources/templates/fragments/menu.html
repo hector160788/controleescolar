@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="leftMenu" class="side-menu-card">
+    <h3 class="side-menu-title">MENU</h3>
+
+    <details class="side-menu-group" open>
+        <summary>Administracion</summary>
+        <ul>
+            <li><a th:href="@{/usuarios/alta}" href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Abrir formulario de alta">Alta de usuario</a></li>
+            <li><a th:href="@{/usuarios/consulta}" href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Ver usuarios registrados">Consulta de usuario</a></li>
+        </ul>
+    </details>
+
+    <details class="side-menu-group" open>
+        <summary>Alumnos</summary>
+        <ul>
+            <li><a th:href="@{/alumnos/alta}" href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Registrar un nuevo alumno">Alta de alumno</a></li>
+            <li><a th:href="@{/alumnos/consulta}" href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Buscar alumnos existentes">Consulta de alumnos</a></li>
+        </ul>
+    </details>
+</aside>
+</body>
+</html>

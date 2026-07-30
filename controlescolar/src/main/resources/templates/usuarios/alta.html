@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de usuario')}"></head>
+
+<body>
+    <div class="home-wrapper">
+        <div th:replace="~{fragments/ui :: appTopbar('Alta de usuario')}"></div>
+
+        <section class="home-content-layout">
+            <div th:replace="~{fragments/menu :: leftMenu}"></div>
+
+            <article class="home-panel">
+                <h2 class="h4 mb-2">ALTA DE USUARIO</h2>
+                <form class="row g-3" method="post" th:action="@{/usuario/crear}" th:object="${usralta}">
+                    <div class="col-md-6">
+                        <label class="form-label" for="nombre">NOMBRE</label>
+                        <input id="nombre" name="nombre" th:field="*{nombre}" type="text" class="form-control"
+                            placeholder="Hector" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="primerapp">PRIMER APELLIDO</label>
+                        <input id="primerapp" name="primerapp" th:field="*{apellidoPaterno}" type="text"
+                            class="form-control" placeholder="Camargo" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="segundoapp">SEGUNDO APELLIDO</label>
+                        <input id="segundoapp" name="segundoapp" th:field="*{apellidoMaterno}" type="text"
+                            class="form-control" placeholder="Lopez">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="curp">CURP</label>
+                        <input id="curp" name="curp" th:field="*{curp}" type="text" class="form-control"
+                            placeholder="ABCD010101HDFRJS07" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="email">CORREO ELECTRONICO</label>
+                        <input id="email" name="email" th:field="*{email}" type="email" class="form-control"
+                            placeholder="correo@dominio.com" required data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="El correo se usara como usuario dentro del sistema">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="telcon1">TELEFONO CONTACTO</label>
+                        <input id="telcon1" name="telcon1" th:field="*{telefono1}" type="text" class="form-control"
+                            placeholder="555-123-4567" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="telcon2">TELEFONO EMERGENCIA</label>
+                        <input id="telcon2" name="telcon2" th:field="*{telefono2}" type="text" class="form-control"
+                            placeholder="555-123-4567">
+                    </div>
+
+                    <h2 class="h4 mb-2">DIRECCION DE USUARIO</h2>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="calle">CALLE</label>
+                        <input id="calle" name="calle" th:field="*{calle}" type="text" class="form-control"
+                            placeholder="Calle Ejemplo">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="numero">NUMERO</label>
+                        <input id="numero" name="numero" th:field="*{numero}" type="text" class="form-control"
+                            placeholder="numero Ejemplo">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="colonia">COLONIA</label>
+                        <input id="colonia" name="colonia" th:field="*{colonia}" type="text" class="form-control"
+                            placeholder="Colonia Ejemplo">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="estado">ESTADO</label>
+                        <select id="estado" name="estado" th:field="*{estado}" class="form-select">
+                            <option value="0">Selecciona...</option>
+                            <option th:each="entidad : ${lstentidadfederativa}" th:value="${entidad.identidad}"
+                                th:text="${entidad.entidad}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                        <button type="button" class="btn btn-outline-secondary">Cancelar</button>
+                        <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>
+                    </div>
+                </form>
+            </article>
+        </section>
+    </div>
+
+    <th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+</body>
+
+</html>

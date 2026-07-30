@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Formulario Demo')}"></head>
+<body>
+<div class="home-wrapper">
+    <div th:replace="~{fragments/ui :: appTopbar('Formulario Demo')}"></div>
+
+    <section class="home-panel mt-3">
+        <h2 class="h4 mb-2">Registro de Alumno</h2>
+        <p class="text-muted mb-4">Usa esta estructura como plantilla para los demas formularios de la aplicacion.</p>
+
+        <form class="row g-3" method="post" th:action="@{/home}">
+            <div class="col-md-6">
+                <label class="form-label" for="matricula">Matricula</label>
+                <input id="matricula" name="matricula" type="text" class="form-control" placeholder="Ej. A2026001">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="nombre">Nombre completo</label>
+                <input id="nombre" name="nombre" type="text" class="form-control" placeholder="Nombre del alumno">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="grado">Grado</label>
+                <select id="grado" name="grado" class="form-select">
+                    <option value="">Selecciona...</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="grupo">Grupo</label>
+                <input id="grupo" name="grupo" type="text" class="form-control" placeholder="Ej. A">
+            </div>
+            <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                <button type="button" class="btn btn-outline-secondary">Cancelar</button>
+                <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+<th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+</body>
+</html>

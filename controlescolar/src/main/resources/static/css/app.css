@@ -1,0 +1,326 @@
+:root {
+    --app-bg-0: #f3f8f7;
+    --app-bg-1: #e2efee;
+    --app-surface: #ffffff;
+    --app-text: #16343a;
+    --app-muted: #5a7175;
+    --app-primary: #0f7c86;
+    --app-primary-strong: #0a5e66;
+    --app-accent: #f2a33a;
+    --app-border: #d6e3e2;
+    --app-danger: #b3261e;
+    --app-success: #1f7a4d;
+    --shadow-soft: 0 16px 44px rgba(22, 52, 58, 0.12);
+    --shadow-focus: 0 0 0 0.2rem rgba(15, 124, 134, 0.25);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    color: var(--app-text);
+    background:
+        radial-gradient(900px 320px at 10% -10%, rgba(15, 124, 134, 0.22), transparent 70%),
+        radial-gradient(780px 320px at 96% 110%, rgba(242, 163, 58, 0.2), transparent 72%),
+        linear-gradient(160deg, var(--app-bg-0), var(--app-bg-1));
+}
+
+.app-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1rem;
+}
+
+.app-card {
+    width: min(980px, 100%);
+    border: 1px solid var(--app-border);
+    border-radius: 24px;
+    background: var(--app-surface);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+
+.brand-panel {
+    background:
+        linear-gradient(145deg, rgba(11, 90, 102, 0.92), rgba(9, 67, 76, 0.94)),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.08), transparent);
+    color: #f4fafb;
+    padding: 2rem;
+    position: relative;
+}
+
+.brand-panel::after {
+    content: "";
+    position: absolute;
+    inset: auto -45px -45px auto;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: rgba(242, 163, 58, 0.28);
+}
+
+.logo-slot {
+    width: 112px;
+    height: 112px;
+    border-radius: 22px;
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    display: grid;
+    place-items: center;
+    margin-bottom: 1.25rem;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+
+.logo-slot img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.logo-fallback {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.brand-title {
+    margin: 0;
+    font-family: "Merriweather", Georgia, serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    line-height: 1.25;
+}
+
+.brand-subtitle {
+    margin: 0.7rem 0 0;
+    color: rgba(232, 246, 248, 0.9);
+}
+
+.form-panel {
+    padding: 2rem;
+}
+
+.form-title {
+    margin: 0;
+    font-family: "Merriweather", Georgia, serif;
+    font-size: 1.7rem;
+}
+
+.form-copy {
+    margin: 0.65rem 0 1.4rem;
+    color: var(--app-muted);
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.form-control {
+    border-radius: 12px;
+    border: 1px solid var(--app-border);
+    padding: 0.72rem 0.9rem;
+}
+
+.form-control:focus {
+    border-color: var(--app-primary);
+    box-shadow: var(--shadow-focus);
+}
+
+.btn-app-primary {
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--app-primary), var(--app-primary-strong));
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.btn-app-inline {
+    width: auto;
+    min-width: 160px;
+}
+
+.btn-app-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+}
+
+.alert-app {
+    border-radius: 12px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.92rem;
+    margin-bottom: 1rem;
+}
+
+.alert-app-danger {
+    background: rgba(179, 38, 30, 0.1);
+    border: 1px solid rgba(179, 38, 30, 0.25);
+    color: var(--app-danger);
+}
+
+.alert-app-success {
+    background: rgba(31, 122, 77, 0.1);
+    border: 1px solid rgba(31, 122, 77, 0.25);
+    color: var(--app-success);
+}
+
+.home-wrapper {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 2rem 1rem 2.5rem;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--app-border);
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    padding: 0.9rem 1rem;
+    backdrop-filter: blur(8px);
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.topbar-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--app-border);
+    background: #ffffff;
+    font-size: 0.92rem;
+}
+
+.topbar-user-label {
+    color: var(--app-muted);
+}
+
+.home-title {
+    font-family: "Merriweather", Georgia, serif;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.btn-link-logout {
+    border: none;
+    background: transparent;
+    color: var(--app-primary-strong);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.home-panel {
+    border-radius: 18px;
+    border: 1px solid var(--app-border);
+    background: rgba(255, 255, 255, 0.92);
+    padding: 1.3rem;
+}
+
+.home-content-layout {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: minmax(240px, 290px) 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+.side-menu-card {
+    border-radius: 18px;
+    border: 1px solid var(--app-border);
+    background: rgba(255, 255, 255, 0.92);
+    padding: 1rem;
+    position: sticky;
+    top: 1rem;
+}
+
+.side-menu-title {
+    margin: 0 0 0.8rem;
+    font-size: 1.05rem;
+    font-family: "Merriweather", Georgia, serif;
+}
+
+.side-menu-group {
+    border: 1px solid var(--app-border);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 0.45rem 0.65rem;
+}
+
+.side-menu-group + .side-menu-group {
+    margin-top: 0.7rem;
+}
+
+.side-menu-group summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--app-primary-strong);
+}
+
+.side-menu-group ul {
+    list-style: none;
+    margin: 0.55rem 0 0;
+    padding: 0;
+}
+
+.side-menu-group li + li {
+    margin-top: 0.4rem;
+}
+
+.side-menu-group a {
+    text-decoration: none;
+    color: var(--app-text);
+    font-size: 0.96rem;
+}
+
+.side-menu-group a:hover {
+    text-decoration: underline;
+    color: var(--app-primary);
+}
+
+@media (max-width: 991px) {
+    .brand-panel,
+    .form-panel {
+        padding: 1.35rem;
+    }
+
+    .logo-slot {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 0.9rem;
+    }
+
+    .home-content-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .side-menu-card {
+        position: static;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+
+    .topbar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

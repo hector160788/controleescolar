@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de alumno')}"></head>
+<body>
+<div class="home-wrapper">
+    <div th:replace="~{fragments/ui :: appTopbar('Alta de alumno')}"></div>
+
+    <section class="home-content-layout">
+        <div th:replace="~{fragments/menu :: leftMenu}"></div>
+
+        <article class="home-panel">
+            <h2 class="h4 mb-2">Alta de alumno</h2>
+            <p class="mb-0">Pantalla base para registrar alumnos.</p>
+        </article>
+    </section>
+</div>
+
+<th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+</body>
+</html>
