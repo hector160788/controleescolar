@@ -14,8 +14,8 @@ public class UsuarioAltaDTO {
     private String apellidoMaterno;
     private String curp;
     private String email;
-    private String password;
-    private int idRol;
+    
+    private Integer idRol;
     private String telefono1;
     private String telefono2;
 
@@ -24,6 +24,9 @@ public class UsuarioAltaDTO {
     private String colonia;
     private String cp;  
     private int estado;
+
+    private String username;
+    private String password;
     
 
 }

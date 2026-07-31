@@ -1,12 +1,15 @@
 package com.mx.controlescolar.web.controller;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mx.controlescolar.model.service.CatalogosService;
+import com.mx.controlescolar.model.service.UsuarioService;
 import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
+import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +19,11 @@ public class CatalogosViewController {
     private Logger log = LoggerFactory.getLogger(CatalogosViewController.class);
 
     private final CatalogosService catalogosService;
+    private final UsuarioService usuarioService;
 
-    public CatalogosViewController(CatalogosService catalogosService) {
+    public CatalogosViewController(CatalogosService catalogosService, UsuarioService usuarioService) {
         this.catalogosService = catalogosService;
+        this.usuarioService = usuarioService;
         
     }
 
@@ -26,15 +31,51 @@ public class CatalogosViewController {
     public String altaUsuario(Model model) {
         String usuario = (String) model.getAttribute("usuarioLogueado");        
         log.info("altaUsuario form: {}" , usuario);
-        model.addAttribute("usralta", new UsuarioAltaDTO());
+        if (!model.containsAttribute("usralta")) {
+            model.addAttribute("usralta", new UsuarioAltaDTO());
+        }
         model.addAttribute("lstentidadfederativa", catalogosService.obtenerEntidadesFederativas());
+       model.addAttribute("lstrole",catalogosService.obtenerRolesUsuario());
         return "usuarios/alta";
     }
 
     @GetMapping("/usuarios/consulta")
-    public String consultaUsuario() {
+    public String consultaUsuario(
+            @RequestParam(name = "correo", required = false) String correo,
+            @RequestParam(name = "nombre", required = false) String nombre,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            Model model) {
+        var resultado = usuarioService.consultarUsuarios(correo, nombre, page, size);
+        model.addAttribute("filtroCorreo", correo == null ? "" : correo);
+        model.addAttribute("filtroNombre", nombre == null ? "" : nombre);
+        model.addAttribute("usuariosResultado", resultado.getContent());
+        model.addAttribute("currentPage", resultado.getNumber());
+        model.addAttribute("totalPages", resultado.getTotalPages());
+        model.addAttribute("pageSize", resultado.getSize());
         return "usuarios/consulta";
     }
+
+    @GetMapping("/usuarios/editar/{idUsuario}")
+    public String editarUsuario(@PathVariable("idUsuario") Long idUsuario, Model model) {
+        UsuarioEdicionDTO usuarioEdicion = usuarioService.obtenerUsuarioParaEdicion(idUsuario);
+        if (usuarioEdicion == null) {
+            model.addAttribute("mensajeError", "No se encontro el usuario solicitado");
+            return "redirect:/usuarios/consulta";
+        }
+        if (!model.containsAttribute("usrEdit")) {
+            model.addAttribute("usrEdit", usuarioEdicion);
+        }
+        model.addAttribute("lstrole", catalogosService.obtenerRolesUsuario());
+        return "usuarios/editar";
+    }
+
+
+    @GetMapping("/institucion/alta")
+    public String altaInstitucion() {
+        return "sistemas/altainstitucion";
+    }
+
 
     @GetMapping("/alumnos/alta")
     public String altaAlumno() {

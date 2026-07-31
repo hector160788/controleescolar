@@ -12,6 +12,10 @@
 
             <article class="home-panel">
                 <h2 class="h4 mb-2">ALTA DE USUARIO</h2>
+
+                <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+                <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
+
                 <form class="row g-3" method="post" th:action="@{/usuario/crear}" th:object="${usralta}">
                     <div class="col-md-6">
                         <label class="form-label" for="nombre">NOMBRE</label>
@@ -80,6 +84,26 @@
                                 th:text="${entidad.entidad}"></option>
                         </select>
                     </div>
+                    <h2 class="h4 mb-2">USUARIO PLATAFORMA</h2>
+                    <div class="col-md-6">
+                        <label class="form-label" for="username">USUARIO</label>
+                        <input id="username" name="username" th:field="*{username}" type="text" class="form-control"
+                            placeholder="Se autocompleta desde el correo" readonly required data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="El correo se usara como usuario dentro del sistema">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="idRol">ROL</label>
+                        <select id="idRol" name="idRol" th:field="*{idRol}" class="form-select" required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="rol : ${lstrole}" th:value="${rol.idrole}" th:text="${rol.role}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="password">CONTRASEÑA</label>
+                        <input id="password" name="password" th:field="*{password}" type="password" class="form-control"
+                            placeholder="********" required>
+                    </div>
+
 
                     <div class="col-12 d-flex gap-2 justify-content-end mt-2">
                         <button type="button" class="btn btn-outline-secondary">Cancelar</button>
@@ -91,6 +115,19 @@
     </div>
 
     <th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const emailInput = document.getElementById('email');
+            const usernameInput = document.getElementById('username');
+
+            const syncUsername = function () {
+                usernameInput.value = emailInput.value.trim();
+            };
+
+            emailInput.addEventListener('input', syncUsername);
+            syncUsername();
+        });
+    </script>
 </body>
 
 </html>

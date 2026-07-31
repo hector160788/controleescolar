@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de usuario')}"></head>
+
+<body>
+    <div class="home-wrapper">
+        <div th:replace="~{fragments/ui :: appTopbar('Alta de usuario')}"></div>
+
+        <section class="home-content-layout">
+            <div th:replace="~{fragments/menu :: leftMenu}"></div>
+
+            <article class="home-panel">
+                <h2 class="h4 mb-2">ALTA DE USUARIO</h2>
+
+                <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+                <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
+
+                <form class="row g-3" method="post" th:action="@{/usuario/crear}" th:object="${usralta}">
+                    <div class="col-md-6">
+                        <label class="form-label" for="nombre">NOMBRE</label>
+                        <input id="nombre" name="nombre"  type="text" class="form-control"
+                            placeholder="Hector" required>
+                    </div>
+                    
+                    <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                        <button type="button" class="btn btn-outline-secondary">Cancelar</button>
+                        <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>
+                    </div>
+                </form>
+            </article>
+        </section>
+    </div>
+
+    <th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+    
+</body>
+
+</html>

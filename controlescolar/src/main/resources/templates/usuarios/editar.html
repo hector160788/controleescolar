@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Editar usuario')}"></head>
+<body>
+<div class="home-wrapper">
+    <div th:replace="~{fragments/ui :: appTopbar('Editar usuario')}"></div>
+
+    <section class="home-content-layout">
+        <div th:replace="~{fragments/menu :: leftMenu}"></div>
+
+        <article class="home-panel">
+            <h2 class="h4 mb-2">Editar usuario</h2>
+
+            <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+            <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
+
+            <form class="row g-3" method="post" th:action="@{/usuario/actualizar}" th:object="${usrEdit}">
+                <input type="hidden" th:field="*{idUsuario}">
+                <input type="hidden" th:field="*{idDatosUsuario}">
+
+                <div class="col-md-6">
+                    <label class="form-label" for="nombre">NOMBRE</label>
+                    <input id="nombre" th:field="*{nombre}" type="text" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="apellidoPaterno">PRIMER APELLIDO</label>
+                    <input id="apellidoPaterno" th:field="*{apellidoPaterno}" type="text" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="apellidoMaterno">SEGUNDO APELLIDO</label>
+                    <input id="apellidoMaterno" th:field="*{apellidoMaterno}" type="text" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="correo">CORREO / USUARIO</label>
+                    <input id="correo" th:field="*{correo}" type="email" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="telefono1">TELEFONO CONTACTO</label>
+                    <input id="telefono1" th:field="*{telefono1}" type="text" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="telefono2">TELEFONO EMERGENCIA</label>
+                    <input id="telefono2" th:field="*{telefono2}" type="text" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="idRol">ROL</label>
+                    <select id="idRol" th:field="*{idRol}" class="form-select" required>
+                        <option value="0">Selecciona...</option>
+                        <option th:each="rol : ${lstrole}" th:value="${rol.idrole}" th:text="${rol.role}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="activo">ESTATUS</label>
+                    <select id="activo" th:field="*{activo}" class="form-select" required>
+                        <option value="1">Activo</option>
+                        <option value="0">Inactivo</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="password">NUEVA CONTRASENA (opcional)</label>
+                    <input id="password" th:field="*{password}" type="password" class="form-control"
+                           placeholder="Dejar vacio para conservar la actual">
+                </div>
+
+                <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                    <a class="btn btn-outline-secondary" th:href="@{/usuarios/consulta}">Cancelar</a>
+                    <button type="submit" class="btn-app-primary btn-app-inline">Actualizar</button>
+                </div>
+            </form>
+        </article>
+    </section>
+</div>
+
+<th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+</body>
+</html>

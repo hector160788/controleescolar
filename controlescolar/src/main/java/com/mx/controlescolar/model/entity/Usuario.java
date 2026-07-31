@@ -1,10 +1,15 @@
 package com.mx.controlescolar.model.entity;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,5 +33,20 @@ public class Usuario {
 
     @Column(name = "isactivo", nullable = false)
     private Short isactivo;
+
+    @Column(name = "fechacreacion", nullable = false, insertable = false, updatable = false)
+    private LocalDateTime fechacreacion;
+
+    @Column(name = "usuariocrea", nullable = false, length = 150)
+    private String usuariocrea;
+
+    @Column(name = "fechamodificaicon")
+    private LocalDateTime fechamodificaicon;
+
+    @Column(name = "usuariomodifica", length = 150)
+    private String usuariomodifica;
+
+    @OneToMany(mappedBy = "usuario")
+    private Set<UsuarioRolEntity> rolesAsignados = new HashSet<>();
 
 }
