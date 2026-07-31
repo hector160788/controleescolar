@@ -11,22 +11,21 @@ import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 @Controller
 public class CatalogosViewController {
     private Logger log = LoggerFactory.getLogger(CatalogosViewController.class);
 
     private final CatalogosService catalogosService;
+
     public CatalogosViewController(CatalogosService catalogosService) {
         this.catalogosService = catalogosService;
+        
     }
 
     @GetMapping("/usuarios/alta")
     public String altaUsuario(Model model) {
-        String usuario = (String) model.getAttribute("usuarioLogueado");
-        
-        log.info("usuariologueado: " + usuario);
+        String usuario = (String) model.getAttribute("usuarioLogueado");        
+        log.info("altaUsuario form: {}" , usuario);
         model.addAttribute("usralta", new UsuarioAltaDTO());
         model.addAttribute("lstentidadfederativa", catalogosService.obtenerEntidadesFederativas());
         return "usuarios/alta";
