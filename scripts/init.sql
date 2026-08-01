@@ -10,6 +10,21 @@ CREATE TABLE usuario (
     CONSTRAINT chk_usuario_isactivo CHECK (isactivo IN (0, 1))
 );
 
+
+CREATE TABLE public.nivelestudios (
+	idnivel int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	idnivelsep varchar NOT NULL,
+	descripcion varchar NOT NULL,
+	CONSTRAINT nivelestudios_pk PRIMARY KEY (idnivel)
+);
+INSERT INTO public.nivelestudios (idnivelsep,descripcion) VALUES
+	 ('95','DOCTORADO'),
+	 ('85','ESPECIALIDAD'),
+	 ('84','TÉCNICO SUPERIOR UNIVERSITARIO'),
+	 ('83','PROFESIONAL ASOCIADO'),
+	 ('82','MAESTRÍA'),
+	 ('81','LICENCIATURA');
+
 select * from usuario;
 INSERT INTO usuario (usuario,"password",isactivo,usuariocrea,fechamodificaicon,usuariomodifica) VALUES
 	 ('sistemas','$2a$10$THeLkOXWUv8Lk5k7UIJ1N.LB2h46EsD4EAHAgCUPmtuhqTdhKXzFm',1,'sistemas',NULL,NULL);
@@ -19,6 +34,17 @@ CREATE TABLE roles (
 	"role" varchar NOT NULL,
 	descripcion varchar NOT NULL,
 	CONSTRAINT roles_pk PRIMARY KEY (idrole)
+);
+INSERT INTO roles
+( "role", descripcion)
+VALUES( 'ROLE_SISTEMAS', 'Role control acceso total solo para desarrollo');
+
+
+CREATE TABLE public.institucion (
+	idinstitucion int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	idinstitucionsep varchar NOT NULL,
+	descripcion varchar NOT NULL,
+	CONSTRAINT institucion_pk PRIMARY KEY (idinstitucion)
 );
 
 CREATE TABLE entidadfederativa (
@@ -65,9 +91,6 @@ INSERT INTO entidadfederativa (id, entidad) VALUES
 
 
 
-INSERT INTO roles
-( "role", descripcion)
-VALUES( 'ROLE_SISTEMAS', 'Role control acceso total solo para desarrollo');
 
 CREATE TABLE datosusuario (
 	iddatusuario bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -125,6 +148,21 @@ ALTER TABLE public.usuario_role ADD CONSTRAINT fk_usuario_role_datosusuario FORE
 INSERT INTO usuario_role
 (idusuario, idrol, usuariocrea)
 VALUES(1, 1, 'sistemas');
+
+
+CREATE TABLE public.carreras (
+	idcarrera int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	idinstitucion int8 NOT NULL,
+	idnivel int4 NOT NULL,
+	idcarrerasep varchar NOT NULL,
+	clavecarrera varchar NOT NULL,
+	descripcion varchar NOT NULL,
+	CONSTRAINT carreras_pk PRIMARY KEY (idcarrera)
+);
+
+ALTER TABLE public.carreras ADD CONSTRAINT fk_carreras_nivel FOREIGN KEY (idnivel) REFERENCES public.nivelestudios(idnivel) ON DELETE RESTRICT;
+ALTER TABLE public.carreras ADD CONSTRAINT fk_carreras_institucion FOREIGN KEY (idinstitucion) REFERENCES public.institucion(idinstitucion) ON DELETE RESTRICT;
+
 
 
 

@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.mx.controlescolar.model.entity.EntidadFederativa;
+import com.mx.controlescolar.model.entity.InstitucionEntity;
 import com.mx.controlescolar.model.entity.RolUsuario;
 import com.mx.controlescolar.model.repository.EntidadFederativaRepository;
+import com.mx.controlescolar.model.repository.InstitucionRepository;
 import com.mx.controlescolar.model.repository.RolUsuarioRepository;
 import com.mx.controlescolar.model.service.CatalogosService;
 
@@ -18,10 +20,14 @@ public class CatalogoServiceImpl implements CatalogosService {
     private final Logger log = LoggerFactory.getLogger(CatalogoServiceImpl.class);
     private final EntidadFederativaRepository entidadFederativaRepository;
     private final RolUsuarioRepository rolUsuarioRepository;
+private final InstitucionRepository institucionRepository;
+
     public CatalogoServiceImpl(EntidadFederativaRepository entidadFederativaRepository,
-                                RolUsuarioRepository rolUsuarioRepository) {
+                                RolUsuarioRepository rolUsuarioRepository,
+                                InstitucionRepository institucionRepository) {
         this.entidadFederativaRepository = entidadFederativaRepository;
         this.rolUsuarioRepository = rolUsuarioRepository;
+        this.institucionRepository = institucionRepository;
     }
 
     @Override
@@ -34,6 +40,12 @@ public class CatalogoServiceImpl implements CatalogosService {
     public List<RolUsuario> obtenerRolesUsuario() {
         log.info("metodo de consulta para obtener roles de usuario");
         return rolUsuarioRepository.findByRole();
+    }
+
+    @Override
+    public List<InstitucionEntity> obtenerInstituciones() {
+        // TODO Auto-generated method stub
+        return institucionRepository.findAll();
     }
 
 }

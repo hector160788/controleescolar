@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de usuario')}"></head>
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de institución')}"></head>
 
 <body>
     <div class="home-wrapper">
@@ -16,13 +16,27 @@
                 <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
                 <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
 
-                <form class="row g-3" method="post" th:action="@{/usuario/crear}" th:object="${usralta}">
+                <form class="row g-3" method="post" th:action="@{/institucion/crear}" th:object="${institucionalta}">
                     <div class="col-md-6">
-                        <label class="form-label" for="nombre">NOMBRE</label>
-                        <input id="nombre" name="nombre"  type="text" class="form-control"
-                            placeholder="Hector" required>
+                        <label class="form-label" for="idinstitucionsep">ID INSTITUCION SEP</label>
+                        <input id="idinstitucionsep" name="idinstitucionsep" th:field="*{idinstitucionsep}" type="text" class="form-control"
+                            placeholder="12345" required>
                     </div>
-                    
+                    <div class="col-md-6">
+                        <label class="form-label" for="nombreinstitucion">NOMBRE DE LA INSTITUCION</label>
+                        <input id="nombreinstitucion" name="nombreinstitucion" th:field="*{nombreinstitucion}" type="text" class="form-control"
+                            placeholder="Nombre de la institución" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="clavecampus">CLAVE CAMPUS</label>
+                        <input id="clavecampus" name="clavecampus" th:field="*{clavecampus}" type="text" class="form-control"
+                            placeholder="Clave del campus" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="descripcionclavecampus">DESCRIPCION CLAVE CAMPUS</label>
+                        <input id="descripcionclavecampus" name="descripcionclavecampus" th:field="*{descripcionclavecampus}" type="text" class="form-control"
+                            placeholder="Descripción de la clave del campus" required>
+                    </div>
                     <div class="col-12 d-flex gap-2 justify-content-end mt-2">
                         <button type="button" class="btn btn-outline-secondary">Cancelar</button>
                         <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>

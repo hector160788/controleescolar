@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.mx.controlescolar.config.security.CurrentUserService;
+import com.mx.controlescolar.model.service.SistemasService;
 import com.mx.controlescolar.model.service.UsuarioService;
+import com.mx.controlescolar.web.dto.CarreraDTO;
+import com.mx.controlescolar.web.dto.InstitucionDTO;
 import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
 
@@ -18,10 +21,12 @@ public class OperacionesViewController {
     private final Logger log = LoggerFactory.getLogger(OperacionesViewController.class);
     private final CurrentUserService currentUserService;
     private final UsuarioService usuarioService;
+    private final SistemasService sistemasService;
 
-    public OperacionesViewController(CurrentUserService currentUserService, UsuarioService usuarioService) {
+    public OperacionesViewController(CurrentUserService currentUserService, UsuarioService usuarioService, SistemasService sistemasService) {
         this.currentUserService = currentUserService;
         this.usuarioService = usuarioService;
+        this.sistemasService = sistemasService;
     }
 
     @PostMapping("/usuario/crear")   
@@ -55,6 +60,33 @@ public class OperacionesViewController {
         redirectAttributes.addFlashAttribute("usrEdit", usrEdit);
         redirectAttributes.addFlashAttribute("mensajeError", "No fue posible actualizar el usuario");
         return "redirect:/usuarios/editar/" + usrEdit.getIdUsuario();
+    }
+
+    @PostMapping("/institucion/crear")
+    public String crearInstitucion(@ModelAttribute("institucionalta") InstitucionDTO institucionDTO, RedirectAttributes redirectAttributes) {
+        String usuario = currentUserService.usernameOrEmpty();
+        log.info("creacion de institucion {} -- {} ", usuario, institucionDTO.toString());
+        int resultado = sistemasService.crearInstitucion(institucionDTO.getIdinstitucionsep(), institucionDTO.getNombreinstitucion());
+        if (resultado > 0) {
+            redirectAttributes.addFlashAttribute("mensajeExito", "Institución creada de forma exitosa");    
+        } else {
+            redirectAttributes.addFlashAttribute("institucionalta", institucionDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la institución");
+        }
+         return "redirect:/institucion/alta";
+    }
+    @PostMapping("/carrera/crear")
+    public String crearCarrera(@ModelAttribute("carreraalta") CarreraDTO carreraDTO, RedirectAttributes redirectAttributes) {
+        String usuario = currentUserService.usernameOrEmpty();
+        log.info("creacion de carrera {} -- {} ", usuario, carreraDTO.toString());
+        int resultado = sistemasService.crearCarrera(carreraDTO);
+        if (resultado > 0) {
+            redirectAttributes.addFlashAttribute("mensajeExito", "Carrera creada de forma exitosa");    
+        } else {
+            redirectAttributes.addFlashAttribute("carreraalta", carreraDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la carrera");
+        }
+         return "redirect:/carreras/alta";
     }
 
 }

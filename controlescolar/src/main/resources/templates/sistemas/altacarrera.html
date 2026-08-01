@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de carrera')}"></head>
+
+<body>
+    <div class="home-wrapper">
+        <div th:replace="~{fragments/ui :: appTopbar('Alta de usuario')}"></div>
+
+        <section class="home-content-layout">
+            <div th:replace="~{fragments/menu :: leftMenu}"></div>
+
+            <article class="home-panel">
+                <h2 class="h4 mb-2">ALTA DE CARRERAS</h2>
+
+                <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+                <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
+
+                <form class="row g-3" method="post" th:action="@{/carrera/crear}" th:object="${carreraalta}">
+                    
+                    <div class="col-md-12">
+                        <label class="form-label" for="nombreinstitucion">INSTITUCION</label>
+                        <select id="nombreinstitucion" name="nombreinstitucion" th:field="*{idinstitucion}" class="form-select" required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="institucion : ${lstinstituciones}" th:value="${institucion.idinstitucion}" th:text="${institucion.descripcion}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="idnivel">NIVEL</label>
+                        <textarea id="idnivel" name="idnivel" th:field="*{idnivel}" class="form-control"
+                            placeholder="Nivel de la carrera" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="idcarrerasep">ID CARRERA SEP</label>
+                        <textarea id="idcarrerasep" name="idcarrerasep" th:field="*{idcarrerasep}" class="form-control"
+                            placeholder="ID de la carrera SEP" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="clavecarrera">CLAVE DE LA CARRERA</label>
+                        <textarea id="clavecarrera" name="clavecarrera" th:field="*{clavecarrera}" class="form-control"
+                            placeholder="Clave de la carrera" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="descripcion">DESCRIPCION</label>
+                        <textarea id="descripcion" name="descripcion" th:field="*{descripcion}" class="form-control"
+                            placeholder="Descripción de la carrera" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                        <button type="button" class="btn btn-outline-secondary">Cancelar</button>
+                        <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>
+                    </div>
+                </form>
+            </article>
+        </section>
+    </div>
+
+    <th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+    
+</body>
+
+</html>

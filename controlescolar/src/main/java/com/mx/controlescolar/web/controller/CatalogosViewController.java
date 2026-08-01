@@ -10,7 +10,8 @@ import com.mx.controlescolar.model.service.CatalogosService;
 import com.mx.controlescolar.model.service.UsuarioService;
 import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
-
+import com.mx.controlescolar.web.dto.CarreraDTO;
+import com.mx.controlescolar.web.dto.InstitucionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +73,15 @@ public class CatalogosViewController {
 
 
     @GetMapping("/institucion/alta")
-    public String altaInstitucion() {
+    public String altaInstitucion(Model model) {
+        model.addAttribute("institucionalta", new InstitucionDTO());
         return "sistemas/altainstitucion";
+    }
+    @GetMapping("/carreras/alta")
+    public String altaCarrera(Model model) {
+        model.addAttribute("carreraalta", new CarreraDTO());
+        model.addAttribute("lstinstituciones", catalogosService.obtenerInstituciones());
+        return "sistemas/altacarrera";
     }
 
 
