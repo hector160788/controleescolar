@@ -6,10 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mx.controlescolar.config.security.CurrentUserService;
 import com.mx.controlescolar.model.service.SistemasService;
 import com.mx.controlescolar.model.service.UsuarioService;
+import com.mx.controlescolar.web.dto.AsignaturaDTO;
 import com.mx.controlescolar.web.dto.CarreraDTO;
 import com.mx.controlescolar.web.dto.InstitucionDTO;
 import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
@@ -76,17 +78,67 @@ public class OperacionesViewController {
          return "redirect:/institucion/alta";
     }
     @PostMapping("/carrera/crear")
-    public String crearCarrera(@ModelAttribute("carreraalta") CarreraDTO carreraDTO, RedirectAttributes redirectAttributes) {
+    public String crearCarrera(
+            @ModelAttribute("carreraalta") CarreraDTO carreraDTO,
+            @RequestParam(name = "confirmado", defaultValue = "false") boolean confirmado,
+            RedirectAttributes redirectAttributes) {
         String usuario = currentUserService.usernameOrEmpty();
         log.info("creacion de carrera {} -- {} ", usuario, carreraDTO.toString());
-        int resultado = sistemasService.crearCarrera(carreraDTO);
-        if (resultado > 0) {
-            redirectAttributes.addFlashAttribute("mensajeExito", "Carrera creada de forma exitosa");    
-        } else {
+
+        if (!confirmado) {
+            redirectAttributes.addFlashAttribute("carreraalta", carreraDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "Operacion cancelada por el usuario");
+            return "redirect:/carreras/alta";
+        }
+
+        try {
+            int resultado = sistemasService.crearCarrera(carreraDTO);
+            if (resultado > 0) {
+                redirectAttributes.addFlashAttribute("mensajeExito", "Carrera creada de forma exitosa");
+            } else {
+                redirectAttributes.addFlashAttribute("carreraalta", carreraDTO);
+                redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la carrera");
+            }
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("carreraalta", carreraDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Error no controlado al crear carrera", ex);
             redirectAttributes.addFlashAttribute("carreraalta", carreraDTO);
             redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la carrera");
         }
          return "redirect:/carreras/alta";
     }
+    @PostMapping("/asignatura/crear")
+    public String crearAsignatura(
+            @ModelAttribute("asignaturaalta") AsignaturaDTO asignaturaDTO,
+            @RequestParam(name = "confirmado", defaultValue = "false") boolean confirmado,
+            RedirectAttributes redirectAttributes) {
+        String usuario = currentUserService.usernameOrEmpty();
+        log.info("creacion de asignatura {} -- {} ", usuario, asignaturaDTO.toString());
 
+        if (!confirmado) {
+            redirectAttributes.addFlashAttribute("asignaturaalta", asignaturaDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "Operacion cancelada por el usuario");
+            return "redirect:/asignaturas/alta";
+        }
+
+        try {
+            int resultado = sistemasService.crearAsignatura(asignaturaDTO);
+            if (resultado > 0) {
+                redirectAttributes.addFlashAttribute("mensajeExito", "Asignatura creada de forma exitosa");
+            } else {
+                redirectAttributes.addFlashAttribute("asignaturaalta", asignaturaDTO);
+                redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la asignatura");
+            }
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("asignaturaalta", asignaturaDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Error no controlado al crear asignatura", ex);
+            redirectAttributes.addFlashAttribute("asignaturaalta", asignaturaDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la asignatura");
+        }
+        return "redirect:/asignaturas/alta";
+    }
 }

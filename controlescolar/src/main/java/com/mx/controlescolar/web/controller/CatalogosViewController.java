@@ -10,6 +10,7 @@ import com.mx.controlescolar.model.service.CatalogosService;
 import com.mx.controlescolar.model.service.UsuarioService;
 import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
+import com.mx.controlescolar.web.dto.AsignaturaDTO;
 import com.mx.controlescolar.web.dto.CarreraDTO;
 import com.mx.controlescolar.web.dto.InstitucionDTO;
 import org.slf4j.Logger;
@@ -25,18 +26,18 @@ public class CatalogosViewController {
     public CatalogosViewController(CatalogosService catalogosService, UsuarioService usuarioService) {
         this.catalogosService = catalogosService;
         this.usuarioService = usuarioService;
-        
+
     }
 
     @GetMapping("/usuarios/alta")
     public String altaUsuario(Model model) {
-        String usuario = (String) model.getAttribute("usuarioLogueado");        
-        log.info("altaUsuario form: {}" , usuario);
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("altaUsuario form: {}", usuario);
         if (!model.containsAttribute("usralta")) {
             model.addAttribute("usralta", new UsuarioAltaDTO());
         }
         model.addAttribute("lstentidadfederativa", catalogosService.obtenerEntidadesFederativas());
-       model.addAttribute("lstrole",catalogosService.obtenerRolesUsuario());
+        model.addAttribute("lstrole", catalogosService.obtenerRolesUsuario());
         return "usuarios/alta";
     }
 
@@ -71,19 +72,29 @@ public class CatalogosViewController {
         return "usuarios/editar";
     }
 
-
     @GetMapping("/institucion/alta")
     public String altaInstitucion(Model model) {
         model.addAttribute("institucionalta", new InstitucionDTO());
         return "sistemas/altainstitucion";
     }
+
     @GetMapping("/carreras/alta")
     public String altaCarrera(Model model) {
-        model.addAttribute("carreraalta", new CarreraDTO());
+        if (!model.containsAttribute("carreraalta")) {
+            model.addAttribute("carreraalta", new CarreraDTO());
+        }
         model.addAttribute("lstinstituciones", catalogosService.obtenerInstituciones());
         return "sistemas/altacarrera";
     }
 
+    @GetMapping("/asignaturas/alta")
+    public String altaAsignatura(Model model) {
+        if (!model.containsAttribute("asignaturaalta")) {
+            model.addAttribute("asignaturaalta", new AsignaturaDTO());
+        }
+        model.addAttribute("lstinstituciones", catalogosService.obtenerInstituciones());
+        return "sistemas/altaasignatura";
+    }
 
     @GetMapping("/alumnos/alta")
     public String altaAlumno() {

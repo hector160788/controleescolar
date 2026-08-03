@@ -45,12 +45,12 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="telcon1">TELEFONO CONTACTO</label>
-                        <input id="telcon1" name="telcon1" th:field="*{telefono1}" type="text" class="form-control"
+                        <input id="telcon1" name="telcon1" th:field="*{telefono1}" type="text" maxlength="10" minlength="10" class="form-control"
                             placeholder="555-123-4567" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="telcon2">TELEFONO EMERGENCIA</label>
-                        <input id="telcon2" name="telcon2" th:field="*{telefono2}" type="text" class="form-control"
+                        <input id="telcon2" name="telcon2" th:field="*{telefono2}" type="text" maxlength="10" minlength="10" class="form-control"
                             placeholder="555-123-4567">
                     </div>
 

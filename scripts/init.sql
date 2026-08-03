@@ -163,7 +163,18 @@ CREATE TABLE public.carreras (
 ALTER TABLE public.carreras ADD CONSTRAINT fk_carreras_nivel FOREIGN KEY (idnivel) REFERENCES public.nivelestudios(idnivel) ON DELETE RESTRICT;
 ALTER TABLE public.carreras ADD CONSTRAINT fk_carreras_institucion FOREIGN KEY (idinstitucion) REFERENCES public.institucion(idinstitucion) ON DELETE RESTRICT;
 
+CREATE TABLE public.asignaturas (
+	idasignatura   bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+	idinstitucion   bigint NOT NULL,
+	idcarrera       bigint NOT NULL,
+	idasignaturasep varchar NOT NULL,
+	claveasignatura varchar NOT NULL,
+	descripcion     varchar NOT NULL,
+	CONSTRAINT asignaturas_pk PRIMARY KEY (idasignatura)
+);
 
+ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_carrera FOREIGN KEY (idcarrera) REFERENCES public.carreras(idcarrera) ON DELETE RESTRICT;
+ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_institucion FOREIGN KEY (idinstitucion) REFERENCES public.institucion(idinstitucion) ON DELETE RESTRICT;
 
 
 
