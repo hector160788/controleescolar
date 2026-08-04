@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de RVOE')}"></head>
+
+<body>
+    <div class="home-wrapper">
+        <div th:replace="~{fragments/ui :: appTopbar('Alta de RVOE Paso 4')}"></div>
+
+        <section class="home-content-layout">
+            <div th:replace="~{fragments/menu :: leftMenu}"></div>
+
+            <article class="home-panel">
+                <h2 class="h4 mb-2">ALTA DE RVOE</h2>
+
+                <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+                <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
+
+                <form id="formAltaRvoe" class="row g-3" method="post" th:action="@{/rvoe/crear}"
+                    th:object="${rvoealta}">
+                    <input type="hidden" id="confirmado" name="confirmado" value="false">
+                    <div class="col-md-6">
+                        <label class="form-label" for="norvoe">NO. RVOE</label>
+                        <textarea id="norvoe" name="norvoe" th:field="*{norvoe}" class="form-control"
+                            placeholder="Numero de RVOE" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="fecharvoe">FECHA RVOE</label>
+                        <textarea id="fecharvoe" name="fecharvoe" th:field="*{fecharvoe}"
+                            class="form-control" placeholder="Fecha de RVOE" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="califmin">CALIFICACION MINIMA</label>
+                        <textarea id="califmin" name="califmin" th:field="*{califmin}"
+                            class="form-control" placeholder="Calificacion minima" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="califmax">CALIFICACION MAXIMA</label>
+                        <textarea id="califmax" name="califmax" th:field="*{califmax}" class="form-control"
+                            placeholder="Calificacion maxima" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="califminaprob">CALIFICACION MINIMA APROBATORIA</label>
+                        <textarea id="califminaprob" name="califminaprob" th:field="*{califminaprob}" class="form-control"
+                            placeholder="Calificacion minima aprobatoria" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="claveplan">CLAVE DEL PLAN</label>
+                        <textarea id="claveplan" name="claveplan" th:field="*{claveplan}" class="form-control"
+                            placeholder="Clave del plan de estudios" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="curpresponsable">CURP RESPONSABLE</label>
+                        <textarea id="curpresponsable" name="curpresponsable" th:field="*{curpresponsable}" class="form-control"
+                            placeholder="CURP del responsable" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="comentarios">COMENTARIOS</label>
+                        <textarea id="comentarios" name="comentarios" th:field="*{comentarios}" class="form-control"
+                            placeholder="Comentarios" rows="3" required></textarea>
+                    </div>
+                    <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                        <button type="button" class="btn btn-outline-secondary">Cancelar</button>
+                        <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>
+                    </div>
+                </form>
+                <div class="modal fade" id="confirmarRvoeModal" tabindex="-1"
+                    aria-labelledby="confirmarRvoeLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmarRvoeLabel">Confirmar guardado de RVOE</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Se guardaran los siguientes registros de RVOE:</p>
+                                <pre id="resumenRvoe"></pre>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" id="btnConfirmarGuardar"
+                                    class="btn-app-primary btn-app-inline">Confirmar y guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </div>
+
+    <th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+    <script>
+        (function () {
+            const form = document.getElementById('formAltaRvoe');
+            if (!form) {
+                return;
+            }
+
+            const inputConfirmado = document.getElementById('confirmado');
+            const resumenEl = document.getElementById('resumenRvoe');
+            const btnConfirmar = document.getElementById('btnConfirmarGuardar');
+            const modalEl = document.getElementById('confirmarRvoeModal');
+            const modal = new bootstrap.Modal(modalEl);
+
+            function splitLineas(id) {
+                return document.getElementById(id).value
+                    .split(/\r?\n/)
+                    .map(v => v.trim())
+                    .filter(v => v.length > 0);
+            }
+
+            form.addEventListener('submit', function (e) {
+                if (inputConfirmado.value === 'true') {
+                    return;
+                }
+
+                e.preventDefault();
+
+                const norvoes = splitLineas('norvoe');
+                const fechasRvoe = splitLineas('fecharvoe');
+                const califMinimas = splitLineas('califmin');
+                const califMaximas = splitLineas('califmax');
+                const califMinAprob = splitLineas('califminaprob');
+                const clavesPlan = splitLineas('claveplan');
+                const curps = splitLineas('curpresponsable');
+                const comentarios = splitLineas('comentarios');
+
+                const valido = norvoes.length > 0
+                    && norvoes.length === fechasRvoe.length
+                    && fechasRvoe.length === califMinimas.length
+                    && califMinimas.length === califMaximas.length
+                    && califMaximas.length === califMinAprob.length
+                    && califMinAprob.length === clavesPlan.length
+                    && clavesPlan.length === curps.length
+                    && curps.length === comentarios.length;
+
+                if (!valido) {
+                    alert('Las listas deben tener el mismo numero de lineas y no estar vacias.');
+                    return;
+                }
+
+                const resumen = norvoes.map((norvoe, i) =>
+                    (i + 1) + ') NO. RVOE: ' + norvoe
+                    + ' | FECHA RVOE: ' + fechasRvoe[i]
+                    + ' | CALIF MIN: ' + califMinimas[i]
+                    + ' | CALIF MAX: ' + califMaximas[i]
+                    + ' | MIN APROB: ' + califMinAprob[i]
+                    + ' | CLAVE PLAN: ' + clavesPlan[i]
+                    + ' | CURP RESP: ' + curps[i]
+                    + ' | COMENTARIOS: ' + comentarios[i]
+                ).join('\n');
+
+                resumenEl.textContent = resumen;
+                modal.show();
+            });
+
+            btnConfirmar.addEventListener('click', function () {
+                inputConfirmado.value = 'true';
+                modal.hide();
+                form.submit();
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

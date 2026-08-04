@@ -14,6 +14,8 @@ import com.mx.controlescolar.model.service.UsuarioService;
 import com.mx.controlescolar.web.dto.AsignaturaDTO;
 import com.mx.controlescolar.web.dto.CarreraDTO;
 import com.mx.controlescolar.web.dto.InstitucionDTO;
+import com.mx.controlescolar.web.dto.RvoeAsignaturaDTO;
+import com.mx.controlescolar.web.dto.RvoeProgramaEstudiosDTO;
 import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
 
@@ -140,5 +142,73 @@ public class OperacionesViewController {
             redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la asignatura");
         }
         return "redirect:/asignaturas/alta";
+    }
+
+        @PostMapping("/rvoe/crear")
+        public String crearRvoe(
+                @ModelAttribute("rvoealta") RvoeProgramaEstudiosDTO rvoeProgramaEstudiosDTO,
+                @RequestParam(name = "confirmado", defaultValue = "false") boolean confirmado,
+                RedirectAttributes redirectAttributes) {
+            String usuario = currentUserService.usernameOrEmpty();
+            log.info("creacion de rvoe {} -- {} ", usuario, rvoeProgramaEstudiosDTO.toString());
+
+            if (!confirmado) {
+                redirectAttributes.addFlashAttribute("rvoealta", rvoeProgramaEstudiosDTO);
+                redirectAttributes.addFlashAttribute("mensajeError", "Operacion cancelada por el usuario");
+                return "redirect:/rvoe/alta";
+            }
+
+            try {
+                int resultado = sistemasService.crearRvoeProgramaEstudio(rvoeProgramaEstudiosDTO);
+                if (resultado > 0) {
+                    redirectAttributes.addFlashAttribute("mensajeExito", "RVOE creado de forma exitosa");
+                } else {
+                    redirectAttributes.addFlashAttribute("rvoealta", rvoeProgramaEstudiosDTO);
+                    redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear el RVOE");
+                }
+            } catch (IllegalArgumentException ex) {
+                redirectAttributes.addFlashAttribute("rvoealta", rvoeProgramaEstudiosDTO);
+                redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+            } catch (Exception ex) {
+                log.error("Error no controlado al crear RVOE", ex);
+                redirectAttributes.addFlashAttribute("rvoealta", rvoeProgramaEstudiosDTO);
+                redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear el RVOE");
+            }
+
+            return "redirect:/rvoe/alta";
+    }
+    
+    @PostMapping("/rvoeasignatura/crear")
+    public String crearRvoeAsignatura(
+            @ModelAttribute("rvoeasignaturaalta") RvoeAsignaturaDTO rvoeAsignaturaDTO,
+            @RequestParam(name = "confirmado", defaultValue = "false") boolean confirmado,
+            RedirectAttributes redirectAttributes) {
+        String usuario = currentUserService.usernameOrEmpty();
+        log.info("creacion de rvoe asignatura {} -- {} ", usuario, rvoeAsignaturaDTO.toString());
+
+        if (!confirmado) {
+            redirectAttributes.addFlashAttribute("rvoeasignaturaalta", rvoeAsignaturaDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "Operacion cancelada por el usuario");
+            return "redirect:/rvoeasignatura/alta";
+        }
+
+        try {
+            int resultado = sistemasService.crearRvoeAsignatura(rvoeAsignaturaDTO);
+            if (resultado > 0) {
+                redirectAttributes.addFlashAttribute("mensajeExito", "RVOE asignatura creada de forma exitosa");
+            } else {
+                redirectAttributes.addFlashAttribute("rvoeasignaturaalta", rvoeAsignaturaDTO);
+                redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la RVOE asignatura");
+            }
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("rvoeasignaturaalta", rvoeAsignaturaDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Error no controlado al crear RVOE asignatura", ex);
+            redirectAttributes.addFlashAttribute("rvoeasignaturaalta", rvoeAsignaturaDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "No fue posible crear la RVOE asignatura");
+        }
+
+        return "redirect:/rvoeasignatura/alta";
     }
 }

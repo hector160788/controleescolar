@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de asignatura')}"></head>
+<head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de RVOE vs Asignatura')}"></head>
 
 <body>
     <div class="home-wrapper">
-        <div th:replace="~{fragments/ui :: appTopbar('Alta de asignatura Paso 3')}"></div>
+        <div th:replace="~{fragments/ui :: appTopbar('Alta de RVOE vs Asignatura Paso 5')}"></div>
 
         <section class="home-content-layout">
             <div th:replace="~{fragments/menu :: leftMenu}"></div>
 
             <article class="home-panel">
-                <h2 class="h4 mb-2">ALTA DE ASIGNATURAS</h2>
+                <h2 class="h4 mb-2">ALTA DE RVOE vs ASIGNATURA</h2>
 
                 <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
                 <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
 
-                <form id="formAltaAsignatura" class="row g-3" method="post" th:action="@{/asignatura/crear}"
-                    th:object="${asignaturaalta}">
+                <form id="formAltaRvoeAsignatura" class="row g-3" method="post" th:action="@{/rvoeasignatura/crear}"
+                    th:object="${rvoeasignaturaalta}">
                     <input type="hidden" id="confirmado" name="confirmado" value="false">
                     <div class="col-md-12">
                         <label class="form-label" for="nombreinstitucion">INSTITUCION</label>
@@ -29,42 +29,42 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="idcarrera">CARRERA</label>
-                        <textarea id="idcarrera" name="idcarrera" th:field="*{idcarrera}" class="form-control"
-                            placeholder="Carrera" rows="3" required></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="idasignaturasep">ID ASIGNATURA</label>
+                        <label class="form-label" for="idasignaturasep">ID ASIGNATURA SEP</label>
                         <textarea id="idasignaturasep" name="idasignaturasep" th:field="*{idasignaturasep}"
                             class="form-control" placeholder="ID de la asignatura SEP" rows="3" required></textarea>
                     </div>
+
                     <div class="col-md-6">
-                        <label class="form-label" for="claveasignatura">CLAVE ASIGNATURA</label>
-                        <textarea id="claveasignatura" name="claveasignatura" th:field="*{claveasignatura}"
-                            class="form-control" placeholder="Clave de la asignatura" rows="3" required></textarea>
+                        <label class="form-label" for="carreras">ID CARRERAS</label>
+                        <textarea id="carreras" name="carreras" th:field="*{carreras}" class="form-control"
+                            placeholder="ID de las carreras" rows="3" required></textarea>
                     </div>
+
+
                     <div class="col-md-6">
-                        <label class="form-label" for="descripcion">DESCRIPCION</label>
-                        <textarea id="descripcion" name="descripcion" th:field="*{descripcion}" class="form-control"
-                            placeholder="Descripción de la asignatura" rows="3" required></textarea>
+                        <label class="form-label" for="rvoe">RVOE</label>
+                        <textarea id="rvoe" name="rvoe" th:field="*{rvoe}" class="form-control" placeholder="RVOE"
+                            rows="3" required></textarea>
                     </div>
+
                     <div class="col-12 d-flex gap-2 justify-content-end mt-2">
                         <button type="button" class="btn btn-outline-secondary">Cancelar</button>
                         <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>
                     </div>
                 </form>
-                <div class="modal fade" id="confirmarCarrerasModal" tabindex="-1"
-                    aria-labelledby="confirmarCarrerasLabel" aria-hidden="true">
+                <div class="modal fade" id="confirmarRvoeAsignaturaModal" tabindex="-1"
+                    aria-labelledby="confirmarRvoeAsignaturaLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="confirmarCarrerasLabel">Confirmar guardado de asignaturas</h5>
+                                <h5 class="modal-title" id="confirmarRvoeAsignaturaLabel">Confirmar guardado de RVOE
+                                    asignatura</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Cerrar"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Se guardaran las siguientes asignaturas:</p>
-                                <pre id="resumenCarreras"></pre>
+                                <p>Se guardaran los siguientes registros de RVOE asignatura:</p>
+                                <pre id="resumenRvoeAsignatura"></pre>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-secondary"
@@ -82,15 +82,15 @@
     <th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
     <script>
         (function () {
-            const form = document.getElementById('formAltaAsignatura');
+            const form = document.getElementById('formAltaRvoeAsignatura');
             if (!form) {
                 return;
             }
 
             const inputConfirmado = document.getElementById('confirmado');
-            const resumenEl = document.getElementById('resumenCarreras');
+            const resumenEl = document.getElementById('resumenRvoeAsignatura');
             const btnConfirmar = document.getElementById('btnConfirmarGuardar');
-            const modalEl = document.getElementById('confirmarCarrerasModal');
+            const modalEl = document.getElementById('confirmarRvoeAsignaturaModal');
             const modal = new bootstrap.Modal(modalEl);
 
             function splitLineas(id) {
@@ -107,26 +107,26 @@
 
                 e.preventDefault();
 
-                const carreras = splitLineas('idcarrera');
+                const institucion = document.getElementById('nombreinstitucion').value.trim();
                 const asignaturas = splitLineas('idasignaturasep');
-                const claves = splitLineas('claveasignatura');
-                const descripciones = splitLineas('descripcion');
+                const rvoes = splitLineas('rvoe');
+                const carreras = splitLineas('carreras');
 
-                const valido = carreras.length > 0
-                    && carreras.length === asignaturas.length
-                    && asignaturas.length === claves.length
-                    && claves.length === descripciones.length;
+                const valido = institucion !== '0'
+                    && asignaturas.length > 0
+                    && asignaturas.length === rvoes.length
+                    && asignaturas.length === carreras.length;
 
                 if (!valido) {
                     alert('Las listas deben tener el mismo numero de lineas y no estar vacias.');
                     return;
                 }
 
-                const resumen = carreras.map((carrera, i) =>
-                    (i + 1) + ') CARRERA: ' + carrera
-                    + ' | ID ASIGNATURA SEP: ' + asignaturas[i]
-                    + ' | CLAVE: ' + claves[i]
-                    + ' | DESCRIPCION: ' + descripciones[i]
+                const resumen = asignaturas.map((asignatura, i) =>
+                    (i + 1) + ') INSTITUCION: ' + institucion
+                    + ' | ID ASIGNATURA SEP: ' + asignatura
+                    + ' | RVOE: ' + rvoes[i]
+                    + ' | ID CARRERAS: ' + carreras[i]
                 ).join('\n');
 
                 resumenEl.textContent = resumen;

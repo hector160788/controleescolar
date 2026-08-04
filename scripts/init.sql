@@ -163,6 +163,25 @@ CREATE TABLE public.carreras (
 ALTER TABLE public.carreras ADD CONSTRAINT fk_carreras_nivel FOREIGN KEY (idnivel) REFERENCES public.nivelestudios(idnivel) ON DELETE RESTRICT;
 ALTER TABLE public.carreras ADD CONSTRAINT fk_carreras_institucion FOREIGN KEY (idinstitucion) REFERENCES public.institucion(idinstitucion) ON DELETE RESTRICT;
 
+CREATE TABLE public.rvoe_progr_estudio (
+	idrvoe bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+	norvoe varchar NOT NULL,
+	fecharvoe varchar NOT NULL,
+	califmin int NOT NULL,
+	califmax int NOT NULL,
+	califminaprob decimal NOT NULL,
+	claveplan varchar NOT NULL,
+	curpresponsable varchar NOT NULL,
+	comentarios varchar NULL,
+	CONSTRAINT rvoe_pk PRIMARY KEY (idrvoe)
+);
+
+-- Column comments
+
+COMMENT ON COLUMN public.rvoe_progr_estudio.comentarios IS 'esta columna es extra por si el rvoe cambia por materia';
+
+
+
 CREATE TABLE public.asignaturas (
 	idasignatura   bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
 	idinstitucion   bigint NOT NULL,
@@ -170,11 +189,13 @@ CREATE TABLE public.asignaturas (
 	idasignaturasep varchar NOT NULL,
 	claveasignatura varchar NOT NULL,
 	descripcion     varchar NOT NULL,
+	idrvoe bigint NULL,
 	CONSTRAINT asignaturas_pk PRIMARY KEY (idasignatura)
 );
 
 ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_carrera FOREIGN KEY (idcarrera) REFERENCES public.carreras(idcarrera) ON DELETE RESTRICT;
 ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_institucion FOREIGN KEY (idinstitucion) REFERENCES public.institucion(idinstitucion) ON DELETE RESTRICT;
+ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_rvoe FOREIGN KEY (idrvoe) REFERENCES public.rvoe_progr_estudio(idrvoe) ON DELETE SET NULL;
 
 
 

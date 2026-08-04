@@ -5,13 +5,13 @@
 
 <body>
     <div class="home-wrapper">
-        <div th:replace="~{fragments/ui :: appTopbar('Alta de usuario')}"></div>
+        <div th:replace="~{fragments/ui :: appTopbar('Alta de institución Paso 1')}"></div>
 
         <section class="home-content-layout">
             <div th:replace="~{fragments/menu :: leftMenu}"></div>
 
             <article class="home-panel">
-                <h2 class="h4 mb-2">ALTA DE USUARIO</h2>
+                <h2 class="h4 mb-2">ALTA DE INSTITUCIÓN</h2>
 
                 <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
                 <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>

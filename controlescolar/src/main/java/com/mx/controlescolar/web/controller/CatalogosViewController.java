@@ -13,6 +13,9 @@ import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
 import com.mx.controlescolar.web.dto.AsignaturaDTO;
 import com.mx.controlescolar.web.dto.CarreraDTO;
 import com.mx.controlescolar.web.dto.InstitucionDTO;
+import com.mx.controlescolar.web.dto.RvoeAsignaturaDTO;
+import com.mx.controlescolar.web.dto.RvoeProgramaEstudiosDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +97,24 @@ public class CatalogosViewController {
         }
         model.addAttribute("lstinstituciones", catalogosService.obtenerInstituciones());
         return "sistemas/altaasignatura";
+    }
+
+    @GetMapping("/rvoe/alta")
+    public String altaRVOE(Model model) {
+        if (!model.containsAttribute("rvoealta")) {
+            model.addAttribute("rvoealta", new RvoeProgramaEstudiosDTO());
+        }
+        model.addAttribute("lstinstituciones", catalogosService.obtenerInstituciones());
+        return "sistemas/altarvoe";
+    }
+
+    @GetMapping("/rvoeasignatura/alta")
+    public String altaRVOEAsignatura(Model model) {
+        if (!model.containsAttribute("rvoeasignaturaalta")) {
+            model.addAttribute("rvoeasignaturaalta", new RvoeAsignaturaDTO());
+        }
+        model.addAttribute("lstinstituciones", catalogosService.obtenerInstituciones());
+        return "sistemas/altarvoeasignatura";
     }
 
     @GetMapping("/alumnos/alta")

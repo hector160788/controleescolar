@@ -9,19 +9,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "asignaturas")
+@Table(name = "rvoe_progr_estudio")
 @Getter
 @Setter
-public class AsignaturaEntity {
+public class RvoeProgramaEstudioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idasignatura;
-    private Long idinstitucion;
-    private Long idcarrera;
-    private String idasignaturasep;
-    private String claveasignatura;
-    private String descripcion;
     private Long idrvoe;
+    private String norvoe;
+    private String fecharvoe;
+    private int califmin;
+    private int califmax;
+    private double califminaprob;
+    private String claveplan;
+    private String curpresponsable;
+    private String comentarios;
 
 }
