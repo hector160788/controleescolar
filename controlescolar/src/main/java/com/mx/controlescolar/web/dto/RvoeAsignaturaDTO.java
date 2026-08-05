@@ -4,6 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * DTO de captura para asociar RVOE a asignaturas.
+ *
+ * Se usa en formularios donde la institucion, la asignatura SEP y el numero de
+ * RVOE se capturan para enlazar el plan academico con su autorizacion.
+ */
 @Setter
 @Getter
 @ToString

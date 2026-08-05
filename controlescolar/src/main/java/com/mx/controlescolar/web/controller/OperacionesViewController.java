@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.mx.controlescolar.config.security.CurrentUserService;
 import com.mx.controlescolar.model.service.SistemasService;
 import com.mx.controlescolar.model.service.UsuarioService;
+import com.mx.controlescolar.web.dto.AlumnoDTO;
 import com.mx.controlescolar.web.dto.AsignaturaDTO;
 import com.mx.controlescolar.web.dto.CarreraDTO;
 import com.mx.controlescolar.web.dto.InstitucionDTO;
@@ -20,11 +21,30 @@ import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
 
 
+
+/**
+ * Controlador de operaciones de escritura para los catalogos y usuarios.
+ *
+ * Esta clase concentra los endpoints POST que reciben informacion desde los
+ * formularios MVC, delegan la persistencia a la capa de servicio y regresan al
+ * formulario correspondiente con mensajes de exito o error mediante flash
+ * attributes.
+ *
+ * El controlador no implementa reglas de negocio complejas; solo coordina la
+ * recepcion del DTO, la invocacion del servicio y la respuesta visual para el
+ * usuario.
+ */
 @Controller
 public class OperacionesViewController {
     private final Logger log = LoggerFactory.getLogger(OperacionesViewController.class);
+
+    // Servicio que resuelve el contexto de seguridad para auditoria.
     private final CurrentUserService currentUserService;
+
+    // Servicio de usuarios con la logica de alta y actualizacion.
     private final UsuarioService usuarioService;
+
+    // Servicio general de sistemas para catalogos y operaciones transaccionales.
     private final SistemasService sistemasService;
 
     public OperacionesViewController(CurrentUserService currentUserService, UsuarioService usuarioService, SistemasService sistemasService) {
@@ -33,6 +53,13 @@ public class OperacionesViewController {
         this.sistemasService = sistemasService;
     }
 
+    /**
+     * Procesa el alta de un usuario nuevo.
+     *
+     * Si la operacion es exitosa se muestra un mensaje de confirmacion. Cuando
+     * falla, se conserva el DTO capturado para que la vista vuelva a mostrar los
+     * datos sin obligar al usuario a reescribirlos.
+     */
     @PostMapping("/usuario/crear")   
     public String creaUsuario(@ModelAttribute(value = "usralta") UsuarioAltaDTO usrDTO,
             RedirectAttributes redirectAttributes) {
@@ -51,6 +78,12 @@ public class OperacionesViewController {
         return "redirect:/usuarios/alta";
     }
 
+    /**
+     * Procesa la actualizacion de un usuario existente.
+     *
+     * En caso de exito redirige a la consulta; si falla, regresa al formulario de
+     * edicion preservando la informacion ya capturada.
+     */
     @PostMapping("/usuario/actualizar")
     public String actualizarUsuario(@ModelAttribute("usrEdit") UsuarioEdicionDTO usrEdit,
             RedirectAttributes redirectAttributes) {
@@ -66,6 +99,12 @@ public class OperacionesViewController {
         return "redirect:/usuarios/editar/" + usrEdit.getIdUsuario();
     }
 
+    /**
+     * Procesa el alta de una nueva institucion.
+     *
+     * El metodo delega la persistencia al servicio de sistemas y muestra el
+     * resultado al regresar a la misma pantalla de alta.
+     */
     @PostMapping("/institucion/crear")
     public String crearInstitucion(@ModelAttribute("institucionalta") InstitucionDTO institucionDTO, RedirectAttributes redirectAttributes) {
         String usuario = currentUserService.usernameOrEmpty();
@@ -79,6 +118,14 @@ public class OperacionesViewController {
         }
          return "redirect:/institucion/alta";
     }
+
+    /**
+     * Procesa el alta de carreras, incluyendo la confirmacion previa desde la
+     * vista y el manejo de errores de negocio.
+     *
+     * La operacion conserva el DTO original cuando falla para que el usuario no
+     * pierda la captura multilinea.
+     */
     @PostMapping("/carrera/crear")
     public String crearCarrera(
             @ModelAttribute("carreraalta") CarreraDTO carreraDTO,
@@ -111,6 +158,11 @@ public class OperacionesViewController {
         }
          return "redirect:/carreras/alta";
     }
+
+    /**
+     * Procesa el alta de asignaturas con el mismo patron de confirmacion y
+     * restauracion de datos que el alta de carreras.
+     */
     @PostMapping("/asignatura/crear")
     public String crearAsignatura(
             @ModelAttribute("asignaturaalta") AsignaturaDTO asignaturaDTO,
@@ -144,6 +196,12 @@ public class OperacionesViewController {
         return "redirect:/asignaturas/alta";
     }
 
+    /**
+     * Procesa el alta de RVOE para programas de estudio.
+     *
+     * El metodo respeta el flujo de confirmacion de la vista, captura errores de
+     * validacion y conserva la informacion del formulario al regresar.
+     */
         @PostMapping("/rvoe/crear")
         public String crearRvoe(
                 @ModelAttribute("rvoealta") RvoeProgramaEstudiosDTO rvoeProgramaEstudiosDTO,
@@ -178,6 +236,13 @@ public class OperacionesViewController {
             return "redirect:/rvoe/alta";
     }
     
+    /**
+     * Procesa el alta de RVOE asignatura.
+     *
+     * La operacion usa el mismo patron de confirmacion, manejo de excepciones y
+     * conservacion del DTO que el resto de catálogos capturados por texto
+     * multilinea.
+     */
     @PostMapping("/rvoeasignatura/crear")
     public String crearRvoeAsignatura(
             @ModelAttribute("rvoeasignaturaalta") RvoeAsignaturaDTO rvoeAsignaturaDTO,
@@ -211,4 +276,26 @@ public class OperacionesViewController {
 
         return "redirect:/rvoeasignatura/alta";
     }
+
+    @PostMapping("/alumno/crear")
+    public String crearAlumno(
+            @ModelAttribute("alumnoalta") AlumnoDTO alumnoDTO,
+            @RequestParam(name = "confirmado", defaultValue = "false") boolean confirmado,
+            RedirectAttributes redirectAttributes) {
+        String usuario = currentUserService.usernameOrEmpty();
+        log.info("creacion de alumno {} -- {} ", usuario, alumnoDTO.toString());
+
+        if (!confirmado) {
+            redirectAttributes.addFlashAttribute("alumnoalta", alumnoDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "Operacion cancelada por el usuario");
+            return "redirect:/alumnos/alta";
+        }
+
+        // TODO: implementar persistencia del alumno y de su inscripcion.
+        redirectAttributes.addFlashAttribute("alumnoalta", alumnoDTO);
+        redirectAttributes.addFlashAttribute("mensajeExito", "Confirmacion recibida. El guardado de alumnos se implementara en el siguiente paso.");
+        return "redirect:/alumnos/alta";
+    }
+    
+  
 }

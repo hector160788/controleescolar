@@ -21,6 +21,26 @@ import com.mx.controlescolar.web.dto.CarreraDTO;
 import com.mx.controlescolar.web.dto.RvoeAsignaturaDTO;
 import com.mx.controlescolar.web.dto.RvoeProgramaEstudiosDTO;
 
+/**
+ * Servicio de implementacion para las operaciones de mantenimiento de catalogos
+ * del modulo de sistemas.
+ *
+ * La clase centraliza la persistencia de instituciones, carreras, asignaturas y
+ * datos relacionados con RVOE. La mayor parte de los metodos siguen el mismo
+ * patron de trabajo:
+ *
+ * <ol>
+ *   <li>recibir un DTO desde la capa web</li>
+ *   <li>normalizar la captura multilinea en arreglos</li>
+ *   <li>validar que las columnas tengan la misma longitud</li>
+ *   <li>validar cada fila con reglas de negocio</li>
+ *   <li>traducir la fila a una entidad JPA</li>
+ *   <li>persistir en el repositorio correspondiente</li>
+ * </ol>
+ *
+ * Cuando una validacion falla, el metodo lanza {@link IllegalArgumentException}
+ * para que la capa web lo muestre al usuario como mensaje de negocio.
+ */
 @Service
 public class SistemasServiceImpl implements SistemasService {
 
@@ -42,6 +62,10 @@ public class SistemasServiceImpl implements SistemasService {
         this.rvoeProgramaEstudioRepository = rvoeProgramaEstudioRepository;
     }
 
+    /**
+     * Crea una nueva institucion y devuelve el identificador generado por la base
+     * de datos.
+     */
     @Override
     public int crearInstitucion(String idinstitucionsep, String nombreinstitucion) {
         // Implementación del método para crear una institución
@@ -55,6 +79,13 @@ public class SistemasServiceImpl implements SistemasService {
         return institucion.getIdinstitucion(); // Retorna el ID de la institución creada
     }
 
+    /**
+     * Crea una o varias carreras a partir de una captura multilinea.
+     *
+     * Cada textarea representa una columna: nivel, id carrera SEP, clave y
+     * descripcion. El metodo valida que todas las columnas tengan la misma
+     * cantidad de lineas y que cada nivel exista en la tabla de niveles.
+     */
     @Override
     public int crearCarrera(CarreraDTO carreraDTO) {
         Object[] datosCarrera = obtenerArrayCarreraDTO(carreraDTO);
@@ -115,6 +146,13 @@ public class SistemasServiceImpl implements SistemasService {
         return guardadas;
     }
 
+    /**
+     * Crea una o varias asignaturas asociadas a una institucion y a una carrera.
+     *
+     * La informacion llega desde la vista en bloques multilinea. El metodo
+     * valida la estructura, resuelve la carrera por su identificador SEP y guarda
+     * una entidad por fila capturada.
+     */
     @Override
     public int crearAsignatura(AsignaturaDTO asignaturaDTO) {
         Object[] datosAsignatura = obtenerArrayAsignaturaDTO(asignaturaDTO);
@@ -170,6 +208,12 @@ public class SistemasServiceImpl implements SistemasService {
         return guardadas;
     }
 
+    /**
+     * Convierte el DTO de carrera en un arreglo de columnas multilinea.
+     *
+     * La posicion 0 conserva la institucion, la 1 los niveles, la 2 las carreras,
+     * la 3 las claves y la 4 las descripciones.
+     */
     private Object[] obtenerArrayCarreraDTO(CarreraDTO carreraDTO) {
         Object[] arrayCarreraDTO = new Object[5];
         String [] niveles =carreraDTO.getIdnivel().split("\\R", -1);
@@ -184,6 +228,12 @@ public class SistemasServiceImpl implements SistemasService {
         return arrayCarreraDTO;
     }
 
+    /**
+     * Convierte el DTO de asignatura en un arreglo de columnas multilinea.
+     *
+     * La posicion 0 conserva la institucion, la 1 las carreras, la 2 las
+     * asignaturas SEP, la 3 las claves y la 4 las descripciones.
+     */
     private Object[] obtenerArrayAsignaturaDTO(AsignaturaDTO asignaturaDTO) {
         Object[] arrayAsignaturaDTO = new Object[5];
         String[] carreras = asignaturaDTO.getIdcarrera().split("\\R", -1);
@@ -198,6 +248,10 @@ public class SistemasServiceImpl implements SistemasService {
         return arrayAsignaturaDTO;
     }
 
+    /**
+     * Persiste los datos de un programa de estudios RVOE validando que las
+     * listas multilinea conserven la misma longitud.
+     */
     @Override
     public int crearRvoeProgramaEstudio(RvoeProgramaEstudiosDTO rvoeProgramaEstudiosDTO) {
         Object[] datosRvoe = obtenerArrayRvoeDTO(rvoeProgramaEstudiosDTO);
@@ -285,6 +339,10 @@ public class SistemasServiceImpl implements SistemasService {
         return guardados;
     }
 
+    /**
+     * Convierte el DTO de RVOE en columnas multilinea para procesar la captura
+     * como una tabla vertical.
+     */
     private Object[] obtenerArrayRvoeDTO(RvoeProgramaEstudiosDTO rvoeProgramaEstudiosDTO) {
         Object[] arrayRvoeDTO = new Object[8];
         String[] noRvoe = rvoeProgramaEstudiosDTO.getNorvoe().split("\\R", -1);
@@ -308,6 +366,12 @@ public class SistemasServiceImpl implements SistemasService {
         return arrayRvoeDTO;
     }
 
+    /**
+     * Convierte el DTO de RVOE asignatura en columnas multilinea.
+     *
+     * La primera posicion mantiene la institucion y las siguientes contienen las
+     * filas capturadas para asignatura, RVOE y carrera.
+     */
     private Object[] obtenerArrayRvoeAsignaturaDTO(RvoeAsignaturaDTO rvoeAsignaturaDTO) {
         Object[] arrayRvoeAsignaturaDTO = new Object[4];
         String[] idAsignaturas = rvoeAsignaturaDTO.getIdasignaturasep().split("\\R", -1);
@@ -322,6 +386,13 @@ public class SistemasServiceImpl implements SistemasService {
         return arrayRvoeAsignaturaDTO;
     }
 
+    /**
+     * Asocia un RVOE a cada asignatura capturada para una institucion dada.
+     *
+     * Primero valida que existan asignaturas para la institucion, luego resuelve
+     * la carrera y el RVOE relacionados y finalmente persiste la relacion sobre
+     * la entidad de asignatura.
+     */
     @Override
     public int crearRvoeAsignatura(RvoeAsignaturaDTO rvoeAsignaturaDTO) {
         List<AsignaturaEntity> asignaturas = asignaturaRespository.findByIdinstitucion(rvoeAsignaturaDTO.getIdinstitucion());

@@ -14,6 +14,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA con los datos personales y de contacto del usuario.
+ *
+ * Es la base del perfil de usuario y se complementa con direccionusuario,
+ * usuario y usuario_role para formar el alta integral del usuario.
+ */
 @Entity
 @Table(name = "datosusuario")
 @Getter

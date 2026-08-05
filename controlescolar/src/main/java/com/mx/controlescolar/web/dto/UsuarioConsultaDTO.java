@@ -3,6 +3,12 @@ package com.mx.controlescolar.web.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO de proyeccion para el listado paginado de usuarios.
+ *
+ * Contiene solo la informacion que la vista de consulta necesita mostrar:
+ * identificadores, nombre resumido, correo, rol, telefono y URL de edicion.
+ */
 @Getter
 @Setter
 public class UsuarioConsultaDTO {

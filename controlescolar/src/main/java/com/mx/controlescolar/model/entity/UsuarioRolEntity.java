@@ -13,6 +13,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad puente que relaciona usuarios, roles y datos personales.
+ *
+ * Esta tabla permite asociar a cada usuario de acceso su rol y, opcionalmente,
+ * el registro de datos personales que lo acompana.
+ */
 @Entity
 @Table(name = "usuario_role")
 @Getter

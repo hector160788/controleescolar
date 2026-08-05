@@ -10,6 +10,56 @@ CREATE TABLE usuario (
     CONSTRAINT chk_usuario_isactivo CHECK (isactivo IN (0, 1))
 );
 
+CREATE TABLE public.genero (
+	idgenero int GENERATED ALWAYS AS IDENTITY NOT NULL,
+	idgenerosep int NOT NULL,
+	genero varchar NOT NULL,
+	CONSTRAINT genero_pk PRIMARY KEY (idgenero)
+);
+
+CREATE TABLE nacionalidad (
+    id_nacionalidad     SMALLSERIAL PRIMARY KEY,
+    nombre              VARCHAR(100) NOT NULL,
+    gentilicio          VARCHAR(100) NOT NULL,
+    codigo_iso2         CHAR(2) NOT NULL,
+    codigo_iso3         CHAR(3) NOT NULL,
+    activo              BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_creacion      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_nacionalidad_nombre UNIQUE(nombre),
+    CONSTRAINT uq_nacionalidad_iso2 UNIQUE(codigo_iso2),
+    CONSTRAINT uq_nacionalidad_iso3 UNIQUE(codigo_iso3)
+);
+
+CREATE INDEX idx_nacionalidad_nombre
+ON nacionalidad(nombre);
+
+CREATE INDEX idx_nacionalidad_gentilicio
+ON nacionalidad(gentilicio);
+
+INSERT INTO nacionalidad
+(nombre, gentilicio, codigo_iso2, codigo_iso3)
+VALUES
+('México', 'Mexicana', 'MX', 'MEX'),
+('Estados Unidos', 'Estadounidense', 'US', 'USA'),
+('Canadá', 'Canadiense', 'CA', 'CAN'),
+('España', 'Española', 'ES', 'ESP'),
+('Francia', 'Francesa', 'FR', 'FRA'),
+('Alemania', 'Alemana', 'DE', 'DEU'),
+('Italia', 'Italiana', 'IT', 'ITA'),
+('Argentina', 'Argentina', 'AR', 'ARG'),
+('Brasil', 'Brasileña', 'BR', 'BRA'),
+('Chile', 'Chilena', 'CL', 'CHL'),
+('Colombia', 'Colombiana', 'CO', 'COL'),
+('Perú', 'Peruana', 'PE', 'PER'),
+('Venezuela', 'Venezolana', 'VE', 'VEN'),
+('Japón', 'Japonesa', 'JP', 'JPN'),
+('China', 'China', 'CN', 'CHN'),
+('Corea del Sur', 'Surcoreana', 'KR', 'KOR'),
+('India', 'India', 'IN', 'IND'),
+('Reino Unido', 'Británica', 'GB', 'GBR');
+
+
 
 CREATE TABLE public.nivelestudios (
 	idnivel int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -180,7 +230,41 @@ CREATE TABLE public.rvoe_progr_estudio (
 
 COMMENT ON COLUMN public.rvoe_progr_estudio.comentarios IS 'esta columna es extra por si el rvoe cambia por materia';
 
+-- public.alumnos definition
 
+-- Drop table
+
+-- DROP TABLE public.alumnos;
+
+CREATE TABLE public.alumnos (
+	idalumno int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	nombre varchar NOT NULL,
+	primerapellido varchar NOT NULL,
+	segundoapellido varchar NULL,
+	curp varchar NOT NULL,
+	email varchar NULL,
+	telefono varchar NULL,
+	idgenero int4 NOT NULL,
+	CONSTRAINT alumnos_pk PRIMARY KEY (idalumno)
+);
+
+alter table public.alumnos add constraint fk_alumnos_genero foreign key (idgenero) references public.genero(idgenero) on delete restrict;
+
+CREATE TABLE public.direccionalumno (
+	iddireccion bigserial NOT NULL,
+	calle varchar(150) NOT NULL,
+	numero_exterior varchar(15) NOT NULL,
+	numero_interior varchar(15) NULL,
+	colonia varchar(150) NOT NULL,
+	codigo_postal bpchar(5) NOT NULL,
+	localidad varchar(150) NULL,
+	municipio varchar(150) NOT NULL,
+	estado varchar(100) NOT NULL,
+	idalumno int8 NOT NULL,
+	CONSTRAINT direccion_pkey PRIMARY KEY (iddireccion)
+);
+
+alter table public.direccionalumno add constraint fk_direccionalumno_alumno foreign key (idalumno) references public.alumnos(idalumno) on delete cascade;
 
 CREATE TABLE public.asignaturas (
 	idasignatura   bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -197,5 +281,29 @@ ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_carrera FOREIGN KEY
 ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_institucion FOREIGN KEY (idinstitucion) REFERENCES public.institucion(idinstitucion) ON DELETE RESTRICT;
 ALTER TABLE public.asignaturas ADD CONSTRAINT fk_asignaturas_rvoe FOREIGN KEY (idrvoe) REFERENCES public.rvoe_progr_estudio(idrvoe) ON DELETE SET NULL;
 
+CREATE TABLE public.alumno_carrera (
+	idalumnocarrera bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+	idalumno bigint NOT NULL,
+	idcarrera bigint NOT NULL,
+	fechainscripcion date NOT NULL DEFAULT CURRENT_DATE,
+	fechainicio date NOT NULL,
+	fechaterminoestimada date  NULL,
+	fechaterminoreal date NULL,
+	estatus varchar(20) NOT NULL DEFAULT 'ACTIVA',
+	observaciones varchar(500) NULL,
+	CONSTRAINT chk_alumno_carrera_fechas CHECK (fechaterminoestimada >= fechainicio),
+	CONSTRAINT chk_alumno_carrera_fechaterminoreal CHECK (fechaterminoreal IS NULL OR fechaterminoreal >= fechainicio),
+	CONSTRAINT chk_alumno_carrera_estatus CHECK (estatus IN ('ACTIVA', 'TERMINADA', 'BAJA', 'CANCELADA')),
+	CONSTRAINT alumno_carrera_pk PRIMARY KEY (idalumnocarrera)
+);
+
+
+ALTER TABLE public.alumno_carrera ADD CONSTRAINT fk_alumno_carrera_alumno FOREIGN KEY (idalumno) REFERENCES public.alumno(idalumno) ON DELETE CASCADE;
+ALTER TABLE public.alumno_carrera ADD CONSTRAINT fk_alumno_carrera_carrera FOREIGN KEY (idcarrera) REFERENCES public.carreras(idcarrera) ON DELETE RESTRICT;
+
+-- Permite mantener historial y asegura una sola inscripcion activa por alumno.
+CREATE UNIQUE INDEX ux_alumno_carrera_una_activa
+	ON public.alumno_carrera (idalumno)
+	WHERE estatus = 'ACTIVA';
 
 

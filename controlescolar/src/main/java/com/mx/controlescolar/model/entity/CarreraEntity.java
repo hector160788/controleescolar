@@ -8,6 +8,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA que representa una carrera academica del catalogo institucional.
+ *
+ * Permite almacenar el nivel educativo, el id SEP, la clave y la descripcion
+ * de la carrera asociada a una institucion.
+ */
 @Entity
 @Table(name = "carreras")
 @Getter

@@ -5,6 +5,13 @@ import com.mx.controlescolar.web.dto.CarreraDTO;
 import com.mx.controlescolar.web.dto.RvoeAsignaturaDTO;
 import com.mx.controlescolar.web.dto.RvoeProgramaEstudiosDTO;
 
+/**
+ * Contrato de operaciones de mantenimiento para catalogos y registros del
+ * modulo de sistemas.
+ *
+ * La interfaz agrupa los casos de uso principales que luego implementa
+ * {@code SistemasServiceImpl}: instituciones, carreras, asignaturas y RVOE.
+ */
 public interface SistemasService {
 
     public int crearInstitucion(String idinstitucionsep, String nombreinstitucion);

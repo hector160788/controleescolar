@@ -9,10 +9,29 @@ import org.springframework.data.repository.query.Param;
 
 import com.mx.controlescolar.model.entity.Usuario;
 
+/**
+ * Repositorio principal de usuarios del sistema.
+ *
+ * Ademas del CRUD basico, expone consultas para autenticacion y resolucion de
+ * authorities usadas por Spring Security.
+ */
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+    /**
+     * Busca un usuario por su nombre de acceso.
+     *
+     * @param usuario nombre de usuario capturado en el login o en procesos de
+     *        negocio
+     * @return usuario persistido si existe
+     */
     Optional<Usuario> findByUsuario(String usuario);
 
+    /**
+     * Recupera los roles asociados a un usuario para construir sus authorities.
+     *
+     * @param usuario nombre de usuario a consultar
+     * @return lista de nombres de rol que Spring Security convierte en granted authorities
+     */
     @Query(value = """
             SELECT r.\"role\"
             FROM usuario u

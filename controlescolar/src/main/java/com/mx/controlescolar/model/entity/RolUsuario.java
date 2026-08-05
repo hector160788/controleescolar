@@ -13,6 +13,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA del catalogo de roles del sistema.
+ *
+ * Cada rol puede relacionarse con uno o varios usuarios mediante la tabla
+ * usuario_role.
+ */
 @Entity
 @Table(name="roles")
 @Getter

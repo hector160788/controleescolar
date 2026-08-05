@@ -32,31 +32,42 @@ import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import com.mx.controlescolar.web.dto.UsuarioConsultaDTO;
 import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
 
-@Service
 /**
- * Servicio de negocio para la alta integral de usuarios.
+ * Implementacion de la logica de negocio para usuarios del sistema.
  *
- * Flujo de la transaccion:
- * 1) Guarda datos personales en datosusuario.
- * 2) Guarda direccion en direccionusuario enlazada a datosusuario.
- * 3) Guarda credencial de acceso en usuario.
- * 4) Guarda relacion usuario-rol en usuario_role.
+ * La clase coordina operaciones completas de alta, consulta y edicion de
+ * usuarios combinando varias tablas relacionadas:
  *
- * Nota:
- * - El metodo principal es transaccional, por lo que si una insercion falla
- * se hace rollback de todas las operaciones previas.
- * - Se registra usuario de auditoria con el usuario autenticado actual.
+ * <ul>
+ *   <li>{@code datosusuario}: informacion personal y de contacto</li>
+ *   <li>{@code direccionusuario}: direccion fisica asociada al usuario</li>
+ *   <li>{@code usuario}: credenciales de acceso y auditoria</li>
+ *   <li>{@code usuario_role}: relacion entre usuario y rol</li>
+ * </ul>
+ *
+ * El objetivo es que la capa web trabaje con DTOs sencillos y este servicio se
+ * encargue de traducirlos a entidades JPA, aplicar validaciones de negocio y
+ * ejecutar las operaciones en una transaccion cuando corresponda.
  */
+@Service
 public class UsuarioServiceImpl implements UsuarioService {
     private final Logger log = LoggerFactory.getLogger(UsuarioServiceImpl.class);
 
+    // Repositorio de datos personales del usuario.
     private final DatosUsuarioRepository datosUsuarioRepository;
+    // Repositorio de direcciones asociadas a usuarios.
     private final DireccionUsuarioRepository direccionUsuarioRepository;
+    // Repositorio de catalogo de entidades federativas.
     private final EntidadFederativaRepository entidadFederativaRepository;
+    // Repositorio de credenciales de acceso.
     private final UsuarioRepository usuarioRepository;
+    // Repositorio de la relacion usuario-rol.
     private final UsuarioRolRepository usuarioRolRepository;
+    // Repositorio del catalogo de roles.
     private final RolUsuarioRepository rolUsuarioRepository;
+    // Codificador usado para almacenar contrasenas de forma segura.
     private final PasswordEncoder passwordEncoder;
+    // Servicio que expone el usuario autenticado actual para auditoria.
     private final CurrentUserService currentUserService;
 
     public UsuarioServiceImpl(DatosUsuarioRepository datosUsuarioRepository,
@@ -77,13 +88,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.currentUserService = currentUserService;
     }
 
+    /**
+     * Ejecuta el alta completa del usuario en una sola transaccion.
+     *
+     * El proceso sigue este orden:
+     * <ol>
+     *   <li>guardar datos personales</li>
+     *   <li>guardar la direccion asociada a esos datos</li>
+     *   <li>crear la credencial de acceso con password cifrada</li>
+     *   <li>registrar la relacion usuario-rol para completar la configuracion</li>
+     * </ol>
+     *
+     * Si cualquiera de las inserciones falla, Spring revierte toda la
+     * transaccion para evitar datos parciales.
+     */
     @Override
     @Transactional
-    /**
-     * Ejecuta la alta completa del usuario en todas las tablas relacionadas.
-     *
-     * @param usuarioAltaDTO datos capturados desde el formulario de alta
-     */
     public int crearUsuario(UsuarioAltaDTO usuarioAltaDTO) {
         int resultado = 0;
         // Inserta primero la informacion personal base del usuario.
@@ -115,6 +135,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         return resultado;
     }
 
+    /**
+     * Consulta usuarios con filtro por correo y nombre, aplicando paginacion.
+     *
+     * El metodo sanitiza los parametros de entrada para que nunca se envien
+     * valores negativos de pagina ni tamanos invalidos al repositorio.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<UsuarioConsultaDTO> consultarUsuarios(String correo, String nombre, int page, int size) {
@@ -129,6 +155,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuariosRol.map(this::mapearUsuarioConsulta);
     }
 
+    /**
+     * Obtiene la informacion necesaria para precargar el formulario de edicion.
+     *
+     * Si el usuario no tiene relacion registrada, el metodo devuelve null para
+     * que la capa web pueda responder con un mensaje adecuado.
+     */
     @Override
     @Transactional(readOnly = true)
     public UsuarioEdicionDTO obtenerUsuarioParaEdicion(Long idUsuario) {
@@ -156,6 +188,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         return dto;
     }
 
+    /**
+     * Actualiza credenciales, datos personales y rol de un usuario existente.
+     *
+     * La actualizacion reemplaza la relacion usuario-rol anterior por una nueva
+     * asociada al rol capturado en el formulario.
+     */
     @Override
     @Transactional
     public int actualizarUsuario(UsuarioEdicionDTO usuarioEdicionDTO) {
@@ -210,6 +248,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         return relacionGuardada.getId() != null ? 1 : 0;
     }
 
+    /**
+     * Convierte una relacion usuario-rol en un DTO de consulta para la vista.
+     *
+     * La salida se usa en listados paginados y en pantallas que muestran el
+     * usuario con su rol, correo y datos personales resumidos.
+     */
     private UsuarioConsultaDTO mapearUsuarioConsulta(UsuarioRolEntity usuarioRolEntity) {
         UsuarioConsultaDTO dto = new UsuarioConsultaDTO();
         dto.setIdUsuario(usuarioRolEntity.getUsuario().getId());
@@ -232,6 +276,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         return dto;
     }
 
+    /**
+     * Construye el nombre completo a partir de los distintos componentes que
+     * pueden venir cargados en la entidad de datos personales.
+     */
     private String construirNombreCompleto(String nombre, String primerApellido, String segundoApellido) {
         StringBuilder sb = new StringBuilder();
         if (nombre != null && !nombre.isBlank()) {
@@ -254,6 +302,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     /**
      * Mapea DTO -> DatosUsuarioEntity (datos personales).
+     *
+     * Esta conversion concentra el origen de la informacion personal del usuario
+     * y agrega la auditoria del usuario autenticado que ejecuta la operacion.
      *
      * @param usuarioAltaDTO datos de entrada del formulario
      * @return entidad lista para persistir en datosusuario
@@ -278,8 +329,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     /**
-     * Mapea DTO -> DireccionUsuarioEntity y enlaza la direccion al registro
-     * de datos personales ya persistido.
+     * Mapea DTO -> DireccionUsuarioEntity y enlaza la direccion al registro de
+     * datos personales ya persistido.
+     *
+     * El metodo tambien resuelve la entidad federativa desde el catalogo para
+     * asegurar integridad referencial antes de persistir.
      *
      * @param usuarioAltaDTO       datos de entrada del formulario
      * @param datosUsuarioGuardado entidad ya guardada en datosusuario
@@ -315,6 +369,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     /**
      * Mapea DTO -> Usuario (credencial de acceso).
      *
+     * Si el formulario no trae username, se usa el correo como respaldo. La
+     * contrasena siempre se cifra antes de persistirla.
+     *
      * @param usuarioAltaDTO datos de entrada del formulario
      * @return entidad lista para persistir en usuario
      */
@@ -347,6 +404,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     /**
      * Mapea DTO -> UsuarioRolEntity para la tabla puente usuario_role.
+     *
+     * El rol es obligatorio porque forma parte de la clave compuesta de la
+     * relacion. La entidad resultante deja lista la asociacion entre el usuario
+     * de acceso, su perfil de datos personales y el rol asignado.
      *
      * @param usuarioAltaDTO       datos del formulario
      * @param usuarioGuardado      usuario de acceso ya persistido

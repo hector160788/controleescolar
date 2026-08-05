@@ -4,6 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * DTO de captura para el alta de programas de estudio con datos de RVOE.
+ *
+ * Los campos se manejan como texto para permitir captura multilinea y
+ * validacion fila por fila en la capa de servicio.
+ */
 @Getter
 @Setter
 @ToString

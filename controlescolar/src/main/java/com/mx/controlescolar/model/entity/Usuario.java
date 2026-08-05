@@ -14,6 +14,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA que representa la credencial de acceso de un usuario.
+ *
+ * Mantiene el username, password, estado y datos de auditoria, ademas de la
+ * relacion con los roles asignados en la tabla puente usuario_role.
+ */
 @Entity
 @Table(name = "usuario")
 @Getter

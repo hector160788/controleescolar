@@ -4,6 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * DTO de captura para el alta integral de un usuario.
+ *
+ * Agrupa datos personales, direccion, credenciales y rol para que el formulario
+ * de alta pueda enviar toda la informacion necesaria en una sola operacion.
+ */
 @Getter
 @Setter
 @ToString

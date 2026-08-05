@@ -6,6 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+/**
+ * Punto de entrada principal de la aplicacion Control Escolar.
+ *
+ * Spring Boot utiliza esta clase para bootstrap del contexto, escaneo de
+ * componentes y arranque del servidor embebido. No contiene logica de negocio;
+ * solo define el arranque de la aplicacion.
+ */
 @SpringBootApplication
 public class ControlescolarApplication 
 //implements CommandLineRunner

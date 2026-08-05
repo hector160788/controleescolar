@@ -11,22 +11,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Configuracion central de seguridad web para la aplicacion.
+ *
+ * Define rutas publicas, pagina de login, cierre de sesion, encoder de
+ * contrasenas y el proveedor de autenticacion basado en {@link UserDetailsService}.
+ */
 @Configuration
 @EnableWebSecurity
-/**
- * Configuracion principal de Spring Security.
- *
- * Esta clase define 3 piezas clave:
- * 1) Que rutas son publicas y cuales requieren autenticacion.
- * 2) Como se procesa el login/logout.
- * 3) Que mecanismo se usa para validar credenciales (usuario/password).
- *
- * Importante para identificar validacion contra base de datos:
- * - En el bean authenticationProvider(...) se inyecta UserDetailsService.
- * - Ese UserDetailsService esta implementado por CustomUserDetailsService (@Service).
- * - CustomUserDetailsService consulta la tabla de usuarios mediante UsuarioRepository.
- * - Por eso el usuario y password se validan con datos persistidos en BD.
- */
 public class SecurityConfig {
 
     @Bean

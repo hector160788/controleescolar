@@ -14,6 +14,13 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA que representa la direccion fisica asociada a los datos de un
+ * usuario.
+ *
+ * Guarda la direccion postal, la entidad federativa y la relacion con el
+ * registro de datos personales del usuario.
+ */
 @Entity
 @Table(name = "direccionusuario")
 @Getter

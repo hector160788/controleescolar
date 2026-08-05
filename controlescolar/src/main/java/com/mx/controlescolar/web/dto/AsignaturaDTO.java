@@ -4,6 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * DTO de captura para el alta de asignaturas.
+ *
+ * Permite enviar en un mismo formulario la institucion, la carrera relacionada
+ * y los datos propios de la asignatura.
+ */
 @Setter
 @Getter
 @ToString

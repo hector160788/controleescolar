@@ -8,6 +8,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA que representa una asignatura registrada en el sistema.
+ *
+ * Guarda su relacion con institucion, carrera y, cuando aplica, con el RVOE
+ * asociado.
+ */
 @Entity
 @Table(name = "asignaturas")
 @Getter

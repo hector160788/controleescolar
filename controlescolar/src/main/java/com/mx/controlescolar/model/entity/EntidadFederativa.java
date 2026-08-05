@@ -6,6 +6,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA que representa una entidad federativa del catalogo geografico.
+ */
 @Entity
 @Table(name="entidadfederativa")
 @Getter

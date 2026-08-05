@@ -12,23 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mx.controlescolar.model.entity.Usuario;
 import com.mx.controlescolar.model.repository.UsuarioRepository;
 
-@Service
 /**
- * Implementacion de UserDetailsService usada por Spring Security.
+ * Implementacion de {@link UserDetailsService} que resuelve usuarios contra la
+ * base de datos.
  *
- * Responsabilidad principal:
- * - Recibir el username capturado en el formulario de login.
- * - Consultar la base de datos para encontrar al usuario.
- * - Transformar la entidad Usuario en un UserDetails que Spring entiende.
- *
- * Flujo durante autenticacion:
- * 1) DaoAuthenticationProvider llama loadUserByUsername(...).
- * 2) Este servicio busca el usuario con UsuarioRepository (consulta BD).
- * 3) Si no existe, lanza UsernameNotFoundException y el login falla.
- * 4) Si existe, obtiene roles desde tablas roles/usuario_role.
- * 5) Construye un UserDetails con username, password (hash) y authorities de BD.
- * 5) Spring compara el password capturado vs hash con el PasswordEncoder configurado.
+ * Spring Security invoca esta clase durante el login para cargar username,
+ * password cifrada, estado y authorities del usuario autenticado.
  */
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     // Repositorio JPA para acceso a la tabla de usuarios.

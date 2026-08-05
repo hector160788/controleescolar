@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.Entity;
 
+/**
+ * Entidad JPA que representa una institucion educativa del sistema.
+ */
 @Entity
 @Table(name="institucion")
 @Getter

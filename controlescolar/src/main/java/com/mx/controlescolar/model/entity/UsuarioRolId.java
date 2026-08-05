@@ -6,6 +6,12 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+/**
+ * Clave compuesta de la tabla puente usuario_role.
+ *
+ * Combina el identificador del usuario y el del rol para representar de forma
+ * univoca cada relacion usuario-rol.
+ */
 @Embeddable
 public class UsuarioRolId implements Serializable {
 

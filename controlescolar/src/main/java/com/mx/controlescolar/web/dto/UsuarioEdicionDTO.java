@@ -3,6 +3,12 @@ package com.mx.controlescolar.web.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO de captura para la edicion de un usuario existente.
+ *
+ * Se usa para precargar el formulario de edicion con informacion personal,
+ * credenciales, estado y rol del usuario.
+ */
 @Getter
 @Setter
 public class UsuarioEdicionDTO {

@@ -12,6 +12,13 @@ import org.springframework.stereotype.Service;
 import com.mx.controlescolar.model.entity.Usuario;
 import com.mx.controlescolar.model.repository.UsuarioRepository;
 
+/**
+ * Servicio auxiliar que encapsula el acceso al usuario autenticado actual.
+ *
+ * La clase centraliza consultas repetitivas sobre el contexto de seguridad para
+ * que controladores, advices y servicios no tengan que manipular directamente
+ * el {@link SecurityContextHolder} en cada punto de uso.
+ */
 @Service
 public class CurrentUserService {
 
@@ -21,10 +28,17 @@ public class CurrentUserService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    /**
+     * Devuelve el nombre de usuario autenticado o una cadena vacia cuando no
+     * existe sesion activa.
+     */
     public String usernameOrEmpty() {
         return authenticated().map(Authentication::getName).orElse("");
     }
 
+    /**
+     * Obtiene las autoridades del usuario autenticado como un conjunto inmutable.
+     */
     public Set<String> authorities() {
         return authenticated()
                 .map(Authentication::getAuthorities)

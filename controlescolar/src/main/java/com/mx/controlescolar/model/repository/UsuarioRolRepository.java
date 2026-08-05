@@ -11,8 +11,23 @@ import org.springframework.data.repository.query.Param;
 import com.mx.controlescolar.model.entity.UsuarioRolEntity;
 import com.mx.controlescolar.model.entity.UsuarioRolId;
 
+/**
+ * Repositorio de la relacion entre usuario, rol y datos personales.
+ *
+ * Se utiliza para la consulta paginada del catalogo de usuarios, la carga de
+ * un usuario especifico para edicion y la eliminacion de relaciones por id de
+ * usuario.
+ */
 public interface UsuarioRolRepository extends JpaRepository<UsuarioRolEntity, UsuarioRolId> {
 
+	/**
+	 * Busca usuarios por correo y nombre de forma paginada.
+	 *
+	 * @param correo filtro parcial sobre el nombre de usuario
+	 * @param nombre filtro parcial sobre el nombre completo mostrado
+	 * @param pageable configuracion de pagina y orden
+	 * @return pagina de relaciones usuario-rol que cumplen los filtros
+	 */
 	@Query("""
 			SELECT ur
 			FROM UsuarioRolEntity ur
@@ -29,6 +44,12 @@ public interface UsuarioRolRepository extends JpaRepository<UsuarioRolEntity, Us
 			@Param("nombre") String nombre,
 			Pageable pageable);
 
+	/**
+	 * Obtiene la relacion completa de un usuario para editarla.
+	 *
+	 * @param idUsuario identificador del usuario a cargar
+	 * @return lista con la relacion y sus asociaciones cargadas por fetch join
+	 */
 	@Query("""
 			SELECT ur
 			FROM UsuarioRolEntity ur
@@ -39,6 +60,11 @@ public interface UsuarioRolRepository extends JpaRepository<UsuarioRolEntity, Us
 			""")
 	List<UsuarioRolEntity> buscarPorIdUsuario(@Param("idUsuario") Long idUsuario);
 
+	/**
+	 * Elimina la relacion usuario-rol asociada a un usuario especifico.
+	 *
+	 * @param idUsuario identificador del usuario cuyas relaciones deben borrarse
+	 */
 	void deleteByUsuario_Id(Long idUsuario);
 
 }

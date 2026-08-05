@@ -1,20 +1,356 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments/ui :: appHead('Control Escolar | Alta de alumno')}"></head>
+
 <body>
-<div class="home-wrapper">
-    <div th:replace="~{fragments/ui :: appTopbar('Alta de alumno')}"></div>
+    <div class="home-wrapper">
+        <div th:replace="~{fragments/ui :: appTopbar('Alta de alumno')}"></div>
 
-    <section class="home-content-layout">
-        <div th:replace="~{fragments/menu :: leftMenu}"></div>
+        <section class="home-content-layout">
+            <div th:replace="~{fragments/menu :: leftMenu}"></div>
 
-        <article class="home-panel">
-            <h2 class="h4 mb-2">Alta de alumno</h2>
-            <p class="mb-0">Pantalla base para registrar alumnos.</p>
-        </article>
-    </section>
-</div>
+            <article class="home-panel">
+                <h2 class="h4 mb-2">Alta de alumno</h2>
 
-<th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+                <div class="alert alert-success" role="alert" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+                <div class="alert alert-danger" role="alert" th:if="${mensajeError}" th:text="${mensajeError}"></div>
+
+                <style>
+                    .js-uppercase {
+                        text-transform: uppercase;
+                    }
+
+                    .js-lowercase {
+                        text-transform: lowercase;
+                    }
+                </style>
+
+                <form id="formAltaAlumno" class="row g-3" method="post" th:action="@{/alumno/crear}"
+                    th:object="${alumnoalta}">
+                    <input type="hidden" id="confirmado" name="confirmado" value="false">
+                    <div class="col-md-4">
+                        <label class="form-label" for="nombre">Nombre</label>
+                        <input id="nombre" type="text" class="form-control js-uppercase" th:field="*{nombre}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="apellidoPaterno">Apellido paterno</label>
+                        <input id="apellidoPaterno" type="text" class="form-control js-uppercase"
+                            th:field="*{apellidoPaterno}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="apellidoMaterno">Apellido materno</label>
+                        <input id="apellidoMaterno" type="text" class="form-control js-uppercase"
+                            th:field="*{apellidoMaterno}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="curp">CURP</label>
+                        <input id="curp" type="text" class="form-control js-uppercase" th:field="*{curp}" maxlength="18"
+                            required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="correoElectronico">Correo electronico</label>
+                        <input id="correoElectronico" type="email" class="form-control js-lowercase"
+                            th:field="*{correoElectronico}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="telefono">Telefono</label>
+                        <input id="telefono" type="text" class="form-control js-uppercase" th:field="*{telefono}"
+                            required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="idgenero">Genero</label>
+                        <select id="idgenero" class="form-select" th:field="*{idgenero}" required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="genero : ${lstgeneros}" th:value="${genero.idgenero}"
+                                th:text="${genero.genero}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="idCarrera">Carrera</label>
+                        <select id="idCarrera" class="form-select" th:field="*{idCarrera}" required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="carrera : ${lstcarreras}" th:value="${carrera.idcarrera}"
+                                th:text="${carrera.idcarrerasep + ' - ' + carrera.descripcion}"></option>
+                        </select>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="fechaingreso">Fecha de ingreso</label>
+                        <input id="fechaingreso" type="date" class="form-control" th:field="*{fechaingreso}" required>
+                    </div>
+
+                    <h2 class="h4 mb-2">Datos 911</h2>
+                    <div class="col-md-4">
+                        <label class="form-label" for="identidadfederativaresidencia">Entidad federativa
+                            residencia</label>
+                        <select id="identidadfederativaresidencia" class="form-select" th:field="*{idresidencia}"
+                            required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="entidad : ${lstentidadfederativa}" th:value="${entidad.identidad}"
+                                th:text="${entidad.entidad}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="idnacionalidad">Nacionalidad</label>
+                        <select id="idnacionalidad" class="form-select" th:field="*{idnacionalidad}" required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="nacionalidad : ${lstnacionalidad}"
+                                th:value="${nacionalidad.id_nacionalidad}"
+                                th:text="${nacionalidad.nombre + ' || ' + nacionalidad.gentilicio}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="localidadnacionalidad">Localidad Nacionalidad</label>
+                        <input id="localidadnacionalidad" type="text" class="form-control js-uppercase"
+                            th:field="*{localidadnacionalidad}" required>
+                    </div>
+
+                    <h2 class="h4 mb-2">Direccion Actual</h2>
+                    <div class="col-md-4">
+                        <label class="form-label" for="calle">Calle</label>
+                        <input id="calle" type="text" class="form-control js-uppercase" th:field="*{calle}" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label" for="numeroExterior">No. exterior</label>
+                        <input id="numeroExterior" type="text" class="form-control js-uppercase" th:field="*{numeroExterior}" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label" for="numeroInterior">No. interior</label>
+                        <input id="numeroInterior" type="text" class="form-control js-uppercase" th:field="*{numeroInterior}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="colonia">Colonia</label>
+                        <input id="colonia" type="text" class="form-control js-uppercase" th:field="*{colonia}" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label" for="codigoPostal">Codigo postal</label>
+                        <input id="codigoPostal" type="text" class="form-control js-uppercase" th:field="*{codigoPostal}" maxlength="5" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="localidad">Localidad</label>
+                        <input id="localidad" type="text" class="form-control js-uppercase" th:field="*{localidad}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="municipio">Municipio</label>
+                        <input id="municipio" type="text" class="form-control js-uppercase" th:field="*{municipio}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="idestado">Estado</label>
+                        <select id="idestado" class="form-select" th:field="*{idestado}" required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="estado : ${lstentidadfederativa}" th:value="${estado.identidad}"
+                                th:text="${estado.entidad}"></option>
+                        </select>
+                    </div>
+
+                    <h2 class="h4 mb-2">Escuela Antecedente</h2>
+                    <div class="col-md-4">
+                        <label class="form-label" for="escuelaprocedencia">Escuela de procedencia</label>
+                        <input id="escuelaprocedencia" type="text" class="form-control js-uppercase"
+                            th:field="*{escuelaprocedencia}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="identidadfederativaprocedencia">Entidad federativa</label>
+                        <select id="identidadfederativaprocedencia" class="form-select"
+                            th:field="*{identidadfederativaprocedencia}" required>
+                            <option value="0">Selecciona...</option>
+                            <option th:each="estado : ${lstentidadfederativa}" th:value="${estado.identidad}"
+                                th:text="${estado.entidad}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="fechafinestudiosprocedencia">Fecha fin de estudios</label>
+                        <input id="fechafinestudiosprocedencia" type="date" class="form-control"
+                            th:field="*{fechafinestudiosprocedencia}" required>
+                    </div>
+                    <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                        <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+                        <button type="submit" class="btn-app-primary btn-app-inline">Guardar</button>
+                    </div>
+                </form>
+
+                <div class="modal fade" id="confirmarAlumnoModal" tabindex="-1" aria-labelledby="confirmarAlumnoLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmarAlumnoLabel">Confirmacion de registro de alumno
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-3">Verifique la informacion antes de confirmar el registro.</p>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered align-middle mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row" style="width: 35%;">Nombre completo</th>
+                                                <td id="resumenNombreCompleto">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">CURP</th>
+                                                <td id="resumenCurp">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Correo electronico</th>
+                                                <td id="resumenCorreo">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Telefono</th>
+                                                <td id="resumenTelefono">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Genero</th>
+                                                <td id="resumenGenero">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Carrera</th>
+                                                <td id="resumenCarrera">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Fecha de ingreso</th>
+                                                <td id="resumenFechaIngreso">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Escuela antecedente</th>
+                                                <td id="resumenEscuela">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Entidad federativa antecedente</th>
+                                                <td id="resumenEntidad">-</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Fin de estudios antecedente</th>
+                                                <td id="resumenFechaFin">-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" id="btnConfirmarAlumnoGuardar"
+                                    class="btn-app-primary btn-app-inline">Confirmar y guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </div>
+
+    <th:block th:replace="~{fragments/ui :: appScripts}"></th:block>
+    <script>
+        (function () {
+            const form = document.getElementById('formAltaAlumno');
+            if (!form) {
+                return;
+            }
+
+            const inputConfirmado = document.getElementById('confirmado');
+            const modalEl = document.getElementById('confirmarAlumnoModal');
+            const btnConfirmarGuardar = document.getElementById('btnConfirmarAlumnoGuardar');
+            const modal = new bootstrap.Modal(modalEl);
+
+            const normalizar = function (el) {
+                if (!el || typeof el.value !== 'string') {
+                    return;
+                }
+                el.value = el.value.toUpperCase();
+            };
+
+            const normalizarMinusculas = function (el) {
+                if (!el || typeof el.value !== 'string') {
+                    return;
+                }
+                el.value = el.value.toLowerCase();
+            };
+
+            const valorCampo = function (id) {
+                const el = document.getElementById(id);
+                return el ? el.value.trim() : '';
+            };
+
+            const textoSeleccionado = function (id) {
+                const el = document.getElementById(id);
+                if (!el || el.selectedIndex < 0) {
+                    return '';
+                }
+                return el.options[el.selectedIndex].text.trim();
+            };
+
+            const valorOGuion = function (valor) {
+                return valor && valor.length > 0 ? valor : '-';
+            };
+
+            const llenarResumen = function () {
+                const nombreCompleto = [valorCampo('nombre'), valorCampo('apellidoPaterno'), valorCampo('apellidoMaterno')]
+                    .filter(function (p) { return p.length > 0; })
+                    .join(' ');
+
+                document.getElementById('resumenNombreCompleto').textContent = valorOGuion(nombreCompleto);
+                document.getElementById('resumenCurp').textContent = valorOGuion(valorCampo('curp'));
+                document.getElementById('resumenCorreo').textContent = valorOGuion(valorCampo('correoElectronico'));
+                document.getElementById('resumenTelefono').textContent = valorOGuion(valorCampo('telefono'));
+                document.getElementById('resumenGenero').textContent = valorOGuion(textoSeleccionado('idgenero'));
+                document.getElementById('resumenCarrera').textContent = valorOGuion(textoSeleccionado('idCarrera'));
+                document.getElementById('resumenFechaIngreso').textContent = valorOGuion(valorCampo('fechaingreso'));
+                document.getElementById('resumenEscuela').textContent = valorOGuion(valorCampo('escuelaprocedencia'));
+                document.getElementById('resumenEntidad').textContent = valorOGuion(textoSeleccionado('identidadfederativaprocedencia'));
+                document.getElementById('resumenFechaFin').textContent = valorOGuion(valorCampo('fechafinestudiosprocedencia'));
+            };
+
+            const campos = form.querySelectorAll('.js-uppercase');
+            const camposMinuscula = form.querySelectorAll('.js-lowercase');
+            campos.forEach(function (campo) {
+                campo.addEventListener('input', function () {
+                    normalizar(campo);
+                });
+                campo.addEventListener('change', function () {
+                    normalizar(campo);
+                });
+            });
+
+            camposMinuscula.forEach(function (campo) {
+                campo.addEventListener('input', function () {
+                    normalizarMinusculas(campo);
+                });
+                campo.addEventListener('change', function () {
+                    normalizarMinusculas(campo);
+                });
+            });
+
+            form.addEventListener('submit', function () {
+                campos.forEach(normalizar);
+                camposMinuscula.forEach(normalizarMinusculas);
+            });
+
+            form.addEventListener('submit', function (e) {
+                if (inputConfirmado.value === 'true') {
+                    return;
+                }
+
+                e.preventDefault();
+                campos.forEach(normalizar);
+                camposMinuscula.forEach(normalizarMinusculas);
+                llenarResumen();
+                modal.show();
+            });
+
+            btnConfirmarGuardar.addEventListener('click', function () {
+                inputConfirmado.value = 'true';
+                modal.hide();
+                form.submit();
+            });
+        })();
+    </script>
 </body>
+
 </html>

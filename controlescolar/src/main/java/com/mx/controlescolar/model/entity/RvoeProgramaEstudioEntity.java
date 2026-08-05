@@ -8,6 +8,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad JPA que representa un programa de estudios con sus datos de RVOE.
+ *
+ * Contiene los valores de autorizacion academica y los datos de calificacion
+ * relacionados con el plan de estudios.
+ */
 @Entity
 @Table(name = "rvoe_progr_estudio")
 @Getter
