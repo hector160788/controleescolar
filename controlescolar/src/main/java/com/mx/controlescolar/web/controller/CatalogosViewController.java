@@ -3,14 +3,17 @@ package com.mx.controlescolar.web.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.mx.controlescolar.model.service.AlumnoService;
 import com.mx.controlescolar.model.service.CatalogosService;
 import com.mx.controlescolar.model.service.UsuarioService;
+import com.mx.controlescolar.web.dto.AlumnoConsultaDTO;
 import com.mx.controlescolar.web.dto.AlumnoDTO;
 import com.mx.controlescolar.web.dto.UsuarioAltaDTO;
 import com.mx.controlescolar.web.dto.UsuarioEdicionDTO;
@@ -49,13 +52,14 @@ public class CatalogosViewController {
     private final CatalogosService catalogosService;
     // Servicio de usuarios usado para obtener datos de consulta y edicion.
     private final UsuarioService usuarioService;
-   
+    private final AlumnoService alumnoService;
 
     public CatalogosViewController(CatalogosService catalogosService,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService,
+            AlumnoService alumnoService) {
         this.catalogosService = catalogosService;
         this.usuarioService = usuarioService;
-
+        this.alumnoService = alumnoService;
     }
 
     /**
@@ -90,6 +94,8 @@ public class CatalogosViewController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("consultaUsuario form: {}", usuario);
         var resultado = usuarioService.consultarUsuarios(correo, nombre, page, size);
         model.addAttribute("filtroCorreo", correo == null ? "" : correo);
         model.addAttribute("filtroNombre", nombre == null ? "" : nombre);
@@ -108,6 +114,8 @@ public class CatalogosViewController {
      */
     @GetMapping("/usuarios/editar/{idUsuario}")
     public String editarUsuario(@PathVariable("idUsuario") Long idUsuario, Model model) {
+       String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("editarUsuario form: {}", usuario);
         UsuarioEdicionDTO usuarioEdicion = usuarioService.obtenerUsuarioParaEdicion(idUsuario);
         if (usuarioEdicion == null) {
             model.addAttribute("mensajeError", "No se encontro el usuario solicitado");
@@ -128,6 +136,8 @@ public class CatalogosViewController {
      */
     @GetMapping("/institucion/alta")
     public String altaInstitucion(Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("altaInstitucion form: {}", usuario);
         model.addAttribute("institucionalta", new InstitucionDTO());
         return "sistemas/altainstitucion";
     }
@@ -141,6 +151,8 @@ public class CatalogosViewController {
      */
     @GetMapping("/carreras/alta")
     public String altaCarrera(Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("altaCarrera form: {}", usuario);
         if (!model.containsAttribute("carreraalta")) {
             model.addAttribute("carreraalta", new CarreraDTO());
         }
@@ -156,6 +168,8 @@ public class CatalogosViewController {
      */
     @GetMapping("/asignaturas/alta")
     public String altaAsignatura(Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("altaAsignatura form: {}", usuario);
         if (!model.containsAttribute("asignaturaalta")) {
             model.addAttribute("asignaturaalta", new AsignaturaDTO());
         }
@@ -171,6 +185,8 @@ public class CatalogosViewController {
      */
     @GetMapping("/rvoe/alta")
     public String altaRVOE(Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("altaRVOE form: {}", usuario);
         if (!model.containsAttribute("rvoealta")) {
             model.addAttribute("rvoealta", new RvoeProgramaEstudiosDTO());
         }
@@ -187,6 +203,8 @@ public class CatalogosViewController {
      */
     @GetMapping("/rvoeasignatura/alta")
     public String altaRVOEAsignatura(Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("altaRVOEAsignatura form: {}", usuario);
         if (!model.containsAttribute("rvoeasignaturaalta")) {
             model.addAttribute("rvoeasignaturaalta", new RvoeAsignaturaDTO());
         }
@@ -202,6 +220,8 @@ public class CatalogosViewController {
      */
     @GetMapping("/alumnos/alta")
     public String altaAlumno(Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("altaAlumno form: {}", usuario);
         if (!model.containsAttribute("alumnoalta")) {
             model.addAttribute("alumnoalta", new AlumnoDTO());
         }
@@ -219,7 +239,32 @@ public class CatalogosViewController {
      * capa que corresponda cuando se implemente el flujo completo.
      */
     @GetMapping("/alumnos/consulta")
-    public String consultaAlumnos() {
+    public String consultaAlumnos(
+            @RequestParam(defaultValue = "") String curp,
+            @RequestParam(defaultValue = "") String nombre,
+            @RequestParam(defaultValue = "") String paterno,
+            @RequestParam(defaultValue = "") String materno,
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
+        String usuario = (String) model.getAttribute("usuarioLogueado");
+        log.info("consultaAlumnos curp={} nombre={} paterno={} materno={} page={} usr={}",
+                curp, nombre, paterno, materno, page, usuario);
+
+        boolean sinFiltros = curp.isBlank() && nombre.isBlank() && paterno.isBlank() && materno.isBlank();
+        if (sinFiltros) {
+            model.addAttribute("alumnosResultado", List.of());
+        } else {
+            var resultado = alumnoService.buscarPorFiltros(curp, nombre, paterno, materno, page, 10);
+            model.addAttribute("alumnosResultado", resultado.getContent());
+            model.addAttribute("currentPage",    resultado.getNumber());
+            model.addAttribute("totalPages",     resultado.getTotalPages());
+        }
+        model.addAttribute("filtroCurp",    curp);
+        model.addAttribute("filtroNombre",  nombre);
+        model.addAttribute("filtroPaterno", paterno);
+        model.addAttribute("filtroMaterno", materno);
+        model.addAttribute("lstestados",    catalogosService.obtenerEntidadesFederativas());
+        model.addAttribute("lstcarreras",   catalogosService.obtenerCarreras());
         return "alumnos/consulta";
     }
 }

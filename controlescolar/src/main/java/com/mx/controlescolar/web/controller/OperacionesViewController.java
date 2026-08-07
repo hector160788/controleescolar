@@ -1,5 +1,7 @@
 package com.mx.controlescolar.web.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import com.mx.controlescolar.model.service.UsuarioService;
 import com.mx.controlescolar.web.dto.AlumnoDTO;
 import com.mx.controlescolar.web.dto.AsignaturaDTO;
 import com.mx.controlescolar.web.dto.CarreraDTO;
+import com.mx.controlescolar.web.dto.DireccionUpdateDTO;
 import com.mx.controlescolar.web.dto.InstitucionDTO;
 import com.mx.controlescolar.web.dto.RvoeAsignaturaDTO;
 import com.mx.controlescolar.web.dto.RvoeProgramaEstudiosDTO;
@@ -321,6 +324,25 @@ public class OperacionesViewController {
         }
         return "redirect:/alumnos/alta";
     }
-    
-  
+
+    @PostMapping("/alumno/direccion/actualizar")
+    public String actualizarDireccionAlumno(@ModelAttribute DireccionUpdateDTO direccionDTO,
+            RedirectAttributes redirectAttributes) {
+        log.info("actualizarDireccionAlumno -- {}", direccionDTO.toString());
+        return "redirect:/alumnos/consulta";
+    }
+
+    @PostMapping("/alumno/carrera/actualizar")
+    public String actualizarCarreraInscripcion(
+            @RequestParam Long idalumnocarrera,
+            @RequestParam Long idalumno,
+            @RequestParam String estatus,
+            @RequestParam int idcarrera,
+            RedirectAttributes redirectAttributes) {
+        log.info("actualizarCarreraInscripcion idalumnocarrera={} idcarrera={} estatus={}", idalumnocarrera, idcarrera, estatus);
+        // TODO: implementar persistencia de estatus y carrera de la inscripcion.
+        return "redirect:/alumnos/consulta";
+    }
+
+
 }

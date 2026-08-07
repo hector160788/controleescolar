@@ -1,13 +1,15 @@
 package com.mx.controlescolar.model.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
+import com.mx.controlescolar.web.dto.AlumnoConsultaDTO;
 import com.mx.controlescolar.web.dto.AlumnoDTO;
 
 public interface AlumnoService {
 
-    public int crearAlumno(AlumnoDTO alumnoDTO);
-    public List<AlumnoDTO> obtenerAlumnos();
-    public AlumnoDTO obtenerAlumnoPorCURPONombre(String curp, String nombre);
+    int crearAlumno(AlumnoDTO alumnoDTO);
 
+    Page<AlumnoConsultaDTO> buscarPorFiltros(String curp, String nombre,
+                                             String paterno, String materno,
+                                             int page, int size);
 }

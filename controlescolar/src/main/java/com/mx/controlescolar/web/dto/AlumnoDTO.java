@@ -46,4 +46,7 @@ public class AlumnoDTO {
     private String municipio;
     private int idestado;
 
+    private Long idalumno;
+    private String generoDescripcion;
+
 }

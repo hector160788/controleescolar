@@ -1,9 +1,14 @@
 package com.mx.controlescolar.model.service.impl;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -19,6 +24,7 @@ import com.mx.controlescolar.model.repository.AlumnoRepository;
 import com.mx.controlescolar.model.repository.DireccionAlumnoRepository;
 import com.mx.controlescolar.model.service.AlumnoService;
 import com.mx.controlescolar.model.service.CatalogosService;
+import com.mx.controlescolar.web.dto.AlumnoConsultaDTO;
 import com.mx.controlescolar.web.dto.AlumnoDTO;
 
 @Service
@@ -123,15 +129,38 @@ public class AlumnoServiceImpl implements AlumnoService {
     }
 
     @Override
-    public java.util.List<AlumnoDTO> obtenerAlumnos() {
-        // Implementación del método para obtener la lista de alumnos
-        return new java.util.ArrayList<>(); // Retorna una lista vacía de ejemplo
+    @Transactional(readOnly = true)
+    public Page<AlumnoConsultaDTO> buscarPorFiltros(String curp, String nombre,
+                                                     String paterno, String materno,
+                                                     int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AlumnoEntity> pageEntidades = alumnoRepository.buscarPorFiltros(
+                StringUtils.hasText(curp)    ? curp.toUpperCase()    : "",
+                StringUtils.hasText(nombre)  ? nombre.toUpperCase()  : "",
+                StringUtils.hasText(paterno) ? paterno.toUpperCase() : "",
+                StringUtils.hasText(materno) ? materno.toUpperCase() : "",
+                pageable);
+
+        List<AlumnoConsultaDTO> dtos = pageEntidades.getContent().stream()
+                .map(this::toConsultaDTO)
+                .toList();
+
+        return new PageImpl<>(dtos, pageable, pageEntidades.getTotalElements());
     }
 
-    @Override
-    public AlumnoDTO obtenerAlumnoPorCURPONombre(String curp, String nombre) {
-        // Implementación del método para obtener un alumno por CURP o nombre
-        return null; // Retorna null de ejemplo
+    private AlumnoConsultaDTO toConsultaDTO(AlumnoEntity alumno) {
+        AlumnoConsultaDTO dto = new AlumnoConsultaDTO();
+        dto.setIdalumno(alumno.getIdalumno());
+        dto.setNombre(alumno.getNombre());
+        dto.setPrimerapellido(alumno.getPrimerapellido());
+        dto.setSegundoapellido(alumno.getSegundoapellido());
+        dto.setCurp(alumno.getCurp());
+        dto.setEmail(alumno.getEmail());
+        dto.setTelefono(alumno.getTelefono());
+        dto.setGenero(alumno.getGenero());
+        dto.setDireccion(direccionAlumnoRepository.findByAlumnoIdalumno(alumno.getIdalumno()).orElse(null));
+        dto.setInscripciones(alumnoCarreraRepository.findByAlumnoIdalumno(alumno.getIdalumno()));
+        return dto;
     }
 
     private AlumnoEntity convertirAlumnoDTOAEntidad(AlumnoDTO alumnoDTO) {
@@ -196,5 +225,7 @@ public class AlumnoServiceImpl implements AlumnoService {
         // Mapear otros campos según sea necesario
         return alumnoCarreraEntity;
     }
+
+   
 
 }
