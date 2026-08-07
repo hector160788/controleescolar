@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mx.controlescolar.config.security.CurrentUserService;
+import com.mx.controlescolar.model.service.AlumnoService;
 import com.mx.controlescolar.model.service.SistemasService;
 import com.mx.controlescolar.model.service.UsuarioService;
 import com.mx.controlescolar.web.dto.AlumnoDTO;
@@ -47,10 +48,13 @@ public class OperacionesViewController {
     // Servicio general de sistemas para catalogos y operaciones transaccionales.
     private final SistemasService sistemasService;
 
-    public OperacionesViewController(CurrentUserService currentUserService, UsuarioService usuarioService, SistemasService sistemasService) {
+    private final AlumnoService alumnoService;
+
+    public OperacionesViewController(CurrentUserService currentUserService, UsuarioService usuarioService, SistemasService sistemasService, AlumnoService alumnoService) {
         this.currentUserService = currentUserService;
         this.usuarioService = usuarioService;
         this.sistemasService = sistemasService;
+        this.alumnoService = alumnoService;
     }
 
     /**
@@ -277,6 +281,14 @@ public class OperacionesViewController {
         return "redirect:/rvoeasignatura/alta";
     }
 
+    /**
+     * Procesa el alta de un nuevo alumno con el flujo de confirmacion de dos pasos.
+     *
+     * Si el usuario no confirmo el formulario se regresa al alta con los datos
+     * preservados. Una vez confirmado, delega la persistencia al servicio y muestra
+     * el resultado; en caso de error conserva el DTO para evitar que el usuario
+     * pierda la informacion capturada.
+     */
     @PostMapping("/alumno/crear")
     public String crearAlumno(
             @ModelAttribute("alumnoalta") AlumnoDTO alumnoDTO,
@@ -291,9 +303,22 @@ public class OperacionesViewController {
             return "redirect:/alumnos/alta";
         }
 
-        // TODO: implementar persistencia del alumno y de su inscripcion.
-        redirectAttributes.addFlashAttribute("alumnoalta", alumnoDTO);
-        redirectAttributes.addFlashAttribute("mensajeExito", "Confirmacion recibida. El guardado de alumnos se implementara en el siguiente paso.");
+        try {
+            int resultado = alumnoService.crearAlumno(alumnoDTO);
+            if (resultado > 0) {
+                redirectAttributes.addFlashAttribute("mensajeExito", "Alumno registrado de forma exitosa");
+            } else {
+                redirectAttributes.addFlashAttribute("alumnoalta", alumnoDTO);
+                redirectAttributes.addFlashAttribute("mensajeError", "No fue posible registrar al alumno");
+            }
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("alumnoalta", alumnoDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Error no controlado al crear alumno", ex);
+            redirectAttributes.addFlashAttribute("alumnoalta", alumnoDTO);
+            redirectAttributes.addFlashAttribute("mensajeError", "No fue posible registrar al alumno");
+        }
         return "redirect:/alumnos/alta";
     }
     

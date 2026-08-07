@@ -259,12 +259,14 @@ CREATE TABLE public.direccionalumno (
 	codigo_postal bpchar(5) NOT NULL,
 	localidad varchar(150) NULL,
 	municipio varchar(150) NOT NULL,
-	estado varchar(100) NOT NULL,
+	idestado int NOT NULL,
 	idalumno int8 NOT NULL,
-	CONSTRAINT direccion_pkey PRIMARY KEY (iddireccion)
+	CONSTRAINT direccion_pkey PRIMARY KEY (iddireccion),
+	CONSTRAINT uq_direccion_alumno UNIQUE (idalumno)
 );
 
 alter table public.direccionalumno add constraint fk_direccionalumno_alumno foreign key (idalumno) references public.alumnos(idalumno) on delete cascade;
+alter table public.direccionalumno add constraint fk_direccionalumno_estado foreign key (idestado) references public.entidadfederativa(identidad) on delete restrict;
 
 CREATE TABLE public.asignaturas (
 	idasignatura   bigint GENERATED ALWAYS AS IDENTITY NOT NULL,

@@ -52,13 +52,31 @@ public interface CatalogosService {
      */
     public List<CarreraEntity> obtenerCarreras();
 
-     /**
+    /**
      * Recupera el catalogo de nacionalidad usado en la captura de alumnos.
      *
      * @return lista de nacionalidades disponibles para los formularios
      */
     public List<NacionalidadEntity> obtenerNacionalidades();
 
+    /**
+     * Recupera el catalogo de genero usado en id capturado.
+     *
+     * @return Objeto de genero correspondiente al id capturado
+     */
+    public GeneroEntity obtenerGeneroPorId(int id);
 
+    /**
+     * Recupera la entidad federativa usada en id capturado.
+     *
+     * @return Objeto de entidad federativa correspondiente al id capturado
+     */
+    public EntidadFederativa obtenerEntidadFederativaPorId(int id);
 
+    /**
+     * Recupera el catalogo de carreras usado en la captura de alumnos.
+     *
+     * @return lista de carreras disponibles para los formularios
+     */
+    public CarreraEntity obtenerCarreraPorId(int id);
 }

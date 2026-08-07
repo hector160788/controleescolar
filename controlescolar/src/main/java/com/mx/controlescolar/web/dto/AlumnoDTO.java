@@ -22,6 +22,7 @@ public class AlumnoDTO {
     private String curp;
     private String correoElectronico;
     private String telefono;
+    private String observaciones;
 
     private String fechaingreso;
     private String escuelaprocedencia;

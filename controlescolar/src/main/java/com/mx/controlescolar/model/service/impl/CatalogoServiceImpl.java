@@ -143,4 +143,35 @@ public class CatalogoServiceImpl implements CatalogosService {
         log.info("metodo de consulta para obtener nacionalidades");
         return nacionalidadRepository.findAll();
     }
+
+    /**
+     * Obtiene un genero por su identificador.
+     *
+     * Se utiliza en los formularios de alumnos para presentar la opcion de
+     * genero correspondiente al id capturado.
+     */
+    @Override
+    public GeneroEntity obtenerGeneroPorId(int id) {
+        log.info("metodo de consulta para obtener genero por id: {}", id);
+        return generoRespository.findById(id).orElse(null);
+    }
+
+
+    /**
+     * Obtiene una entidad federativa por su identificador.
+     *
+     * Se utiliza en los formularios de alumnos para presentar la opcion de
+     * entidad federativa correspondiente al id capturado.
+     */
+    @Override
+    public EntidadFederativa obtenerEntidadFederativaPorId(int id) {
+        log.info("metodo de consulta para obtener entidad federativa por id: {}", id);
+        return entidadFederativaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public CarreraEntity obtenerCarreraPorId(int id) {
+       return carreraRepository.findById(id).orElse(null);
+    }
+    
 }
